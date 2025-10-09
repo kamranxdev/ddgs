@@ -1,6 +1,6 @@
 name: ddgs
 description: A professional metasearch library that aggregates results from multiple web search engines including DuckDuckGo, Bing, Brave, and more.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/Kamran1819G/ddgs
 repository: https://github.com/Kamran1819G/ddgs
 issue_tracker: https://github.com/Kamran1819G/ddgs/issues

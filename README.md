@@ -1,7 +1,7 @@
 # DDGS - Dux Distributed Global Search
 
 ![Dart >= 3.0](https://img.shields.io/badge/dart->=3.0-blue.svg)
-![Version](https://img.shields.io/badge/version-0.1.2-green.svg)
+![Version](https://img.shields.io/badge/version-0.1.3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 A professional metasearch library that aggregates results from multiple web search engines including DuckDuckGo, Bing, Brave, and more.
@@ -39,7 +39,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  ddgs: ^0.1.2
+  ddgs: ^0.1.3
 ```
 
 Or install via command line:

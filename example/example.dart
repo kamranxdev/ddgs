@@ -14,7 +14,7 @@ void main() async {
       maxResults: 5,
       backend: 'google',
     );
-    
+
     for (final result in textResults) {
       print('Title: ${result['title']}');
       print('URL: ${result['href']}');
@@ -28,7 +28,7 @@ void main() async {
       'nature photography',
       maxResults: 3,
     );
-    
+
     for (final result in imageResults) {
       print('Title: ${result['title']}');
       print('Image URL: ${result['image']}');
@@ -43,14 +43,13 @@ void main() async {
       maxResults: 3,
       timelimit: 'd', // last day
     );
-    
+
     for (final result in newsResults) {
       print('Title: ${result['title']}');
       print('URL: ${result['url']}');
       print('Date: ${result['date']}');
       print('---');
     }
-
   } catch (e) {
     print('Error: $e');
   } finally {

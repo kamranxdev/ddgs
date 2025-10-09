@@ -1,0 +1,53 @@
+/// Engine registry.
+
+import '../base_search_engine.dart';
+import 'bing.dart';
+import 'brave.dart';
+import 'duckduckgo.dart';
+import 'duckduckgo_images.dart';
+import 'duckduckgo_news.dart';
+import 'duckduckgo_videos.dart';
+import 'mojeek.dart';
+import 'wikipedia.dart';
+import 'yahoo.dart';
+import 'yandex.dart';
+
+/// Registry of all available search engines.
+///
+/// Organized by category (text, images, videos, news, books).
+final Map<
+    String,
+    Map<
+        String,
+        BaseSearchEngine Function(
+            {String? proxy, Duration? timeout, bool verify})>> engines = {
+  'text': {
+    'bing': ({proxy, timeout, verify = true}) =>
+        BingEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'brave': ({proxy, timeout, verify = true}) =>
+        BraveEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'duckduckgo': ({proxy, timeout, verify = true}) =>
+        DuckDuckGoEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'mojeek': ({proxy, timeout, verify = true}) =>
+        MojeekEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'wikipedia': ({proxy, timeout, verify = true}) =>
+        WikipediaEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'yahoo': ({proxy, timeout, verify = true}) =>
+        YahooEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'yandex': ({proxy, timeout, verify = true}) =>
+        YandexEngine(proxy: proxy, timeout: timeout, verify: verify),
+  },
+  'images': {
+    'duckduckgo': ({proxy, timeout, verify = true}) =>
+        DuckDuckGoImagesEngine(proxy: proxy, timeout: timeout, verify: verify),
+  },
+  'videos': {
+    'duckduckgo': ({proxy, timeout, verify = true}) =>
+        DuckDuckGoVideosEngine(proxy: proxy, timeout: timeout, verify: verify),
+  },
+  'news': {
+    'duckduckgo': ({proxy, timeout, verify = true}) =>
+        DuckDuckGoNewsEngine(proxy: proxy, timeout: timeout, verify: verify),
+  },
+  'books': {},
+};

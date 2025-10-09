@@ -25,7 +25,7 @@ void main() {
     test('text search result has required fields', () async {
       final results = await ddgs.text('dart programming', maxResults: 1);
       expect(results, isNotEmpty);
-      
+
       final result = results.first;
       expect(result.containsKey('title'), isTrue);
       expect(result.containsKey('href'), isTrue);
@@ -78,7 +78,7 @@ void main() {
         href: 'https://example.com',
         body: '  Test  body  ',
       );
-      
+
       expect(result.title, equals('Test Title'));
       expect(result.href, equals('https://example.com'));
       expect(result.body, equals('Test body'));
@@ -91,7 +91,7 @@ void main() {
         thumbnail: 'https://example.com/thumb.jpg',
         url: 'https://example.com',
       );
-      
+
       final json = result.toJson();
       expect(json['title'], equals('Test Image'));
       expect(json['image'], equals('https://example.com/image.jpg'));
@@ -104,7 +104,7 @@ void main() {
         url: 'https://example.com/news',
         date: '2024-01-01',
       );
-      
+
       final json = result.toJson();
       expect(json['title'], equals('News Title'));
       expect(json['url'], equals('https://example.com/news'));
@@ -115,22 +115,23 @@ void main() {
   group('ResultsAggregator Tests', () {
     test('deduplicates results', () {
       final aggregator = ResultsAggregator<TextResult>({'href'});
-      
+
       aggregator.add(TextResult(title: 'Test 1', href: 'https://example.com'));
       aggregator.add(TextResult(title: 'Test 2', href: 'https://example.com'));
-      aggregator.add(TextResult(title: 'Test 3', href: 'https://different.com'));
-      
+      aggregator
+          .add(TextResult(title: 'Test 3', href: 'https://different.com'));
+
       expect(aggregator.length, equals(2));
     });
 
     test('addAll works correctly', () {
       final aggregator = ResultsAggregator<TextResult>({'href'});
-      
+
       final results = [
         TextResult(title: 'Test 1', href: 'https://example1.com'),
         TextResult(title: 'Test 2', href: 'https://example2.com'),
       ];
-      
+
       aggregator.addAll(results);
       expect(aggregator.length, equals(2));
     });
@@ -147,7 +148,8 @@ void main() {
         expandProxyTbAlias('tb'),
         equals('socks5h://127.0.0.1:9150'),
       );
-      expect(expandProxyTbAlias('http://proxy.com'), equals('http://proxy.com'));
+      expect(
+          expandProxyTbAlias('http://proxy.com'), equals('http://proxy.com'));
       expect(expandProxyTbAlias(null), isNull);
     });
   });

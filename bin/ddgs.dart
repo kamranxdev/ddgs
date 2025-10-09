@@ -1,4 +1,5 @@
 /// CLI tool for DDGS.
+library;
 
 import 'dart:io';
 import 'dart:convert';
@@ -21,10 +22,15 @@ void main(List<String> arguments) async {
   for (final cmd in ['text', 'images', 'videos', 'news', 'books']) {
     parser.commands[cmd]!
       ..addOption('query', abbr: 'q', help: 'Search query', mandatory: true)
-      ..addOption('region', abbr: 'r', help: 'Region (e.g., us-en)', defaultsTo: 'us-en')
-      ..addOption('safesearch', abbr: 's', help: 'Safe search (on/moderate/off)', defaultsTo: 'moderate')
+      ..addOption('region',
+          abbr: 'r', help: 'Region (e.g., us-en)', defaultsTo: 'us-en')
+      ..addOption('safesearch',
+          abbr: 's',
+          help: 'Safe search (on/moderate/off)',
+          defaultsTo: 'moderate')
       ..addOption('timelimit', abbr: 't', help: 'Time limit (d/w/m/y)')
-      ..addOption('max-results', abbr: 'm', help: 'Maximum results', defaultsTo: '10')
+      ..addOption('max-results',
+          abbr: 'm', help: 'Maximum results', defaultsTo: '10')
       ..addOption('page', abbr: 'p', help: 'Page number', defaultsTo: '1')
       ..addOption('backend',
           abbr: 'b',
@@ -192,9 +198,10 @@ void printResults(List<Map<String, dynamic>> results) {
   }
 }
 
-Future<void> saveResults(List<Map<String, dynamic>> results, String filename) async {
+Future<void> saveResults(
+    List<Map<String, dynamic>> results, String filename) async {
   final file = File(filename);
-  
+
   if (filename.endsWith('.json')) {
     await file.writeAsString(jsonEncode(results));
   } else if (filename.endsWith('.csv')) {
@@ -203,7 +210,7 @@ Future<void> saveResults(List<Map<String, dynamic>> results, String filename) as
       // Write header
       final keys = results.first.keys.toList();
       buffer.writeln(keys.join(','));
-      
+
       // Write rows
       for (final result in results) {
         final values = keys.map((key) {

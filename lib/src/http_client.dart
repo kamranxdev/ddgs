@@ -52,20 +52,16 @@ class HttpClient {
 
       http.Response response;
       final requestHeaders = {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         ...?headers,
       };
 
       switch (method.toUpperCase()) {
         case 'GET':
-          response =
-              await _client.get(url, headers: requestHeaders).timeout(timeout);
+          response = await _client.get(url, headers: requestHeaders).timeout(timeout);
           break;
         case 'POST':
-          response = await _client
-              .post(url, headers: requestHeaders, body: body)
-              .timeout(timeout);
+          response = await _client.post(url, headers: requestHeaders, body: body).timeout(timeout);
           break;
         default:
           throw DDGSException('Unsupported HTTP method: $method');

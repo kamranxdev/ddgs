@@ -1,4 +1,5 @@
 /// Brave search engine implementation.
+library;
 
 import '../base_search_engine.dart';
 import '../results.dart';

@@ -22,33 +22,19 @@ void main(List<String> arguments) async {
   for (final cmd in ['text', 'images', 'videos', 'news', 'books']) {
     parser.commands[cmd]!
       ..addOption('query', abbr: 'q', help: 'Search query', mandatory: true)
-      ..addOption('region',
-          abbr: 'r', help: 'Region (e.g., us-en)', defaultsTo: 'us-en')
-      ..addOption('safesearch',
-          abbr: 's',
-          help: 'Safe search (on/moderate/off)',
-          defaultsTo: 'moderate')
+      ..addOption('region', abbr: 'r', help: 'Region (e.g., us-en)', defaultsTo: 'us-en')
+      ..addOption('safesearch', abbr: 's', help: 'Safe search (on/moderate/off)', defaultsTo: 'moderate')
       ..addOption('timelimit', abbr: 't', help: 'Time limit (d/w/m/y)')
-      ..addOption('max-results',
-          abbr: 'm', help: 'Maximum results', defaultsTo: '10')
+      ..addOption('max-results', abbr: 'm', help: 'Maximum results', defaultsTo: '10')
       ..addOption('page', abbr: 'p', help: 'Page number', defaultsTo: '1')
       ..addOption('backend',
           abbr: 'b',
           help: 'Search backend to use (recommended: duckduckgo)',
           defaultsTo: 'duckduckgo',
-          allowed: [
-            'auto',
-            'bing',
-            'brave',
-            'duckduckgo',
-            'mojeek',
-            'yahoo',
-            'yandex',
-            'wikipedia'
-          ])
+          allowed: ['auto', 'bing', 'brave', 'duckduckgo', 'mojeek', 'yahoo', 'yandex', 'wikipedia'])
       ..addOption('proxy', help: 'Proxy URL')
       ..addOption('output', abbr: 'o', help: 'Output file (json or csv)')
-      ..addFlag('json', help: 'Output as JSON', defaultsTo: false);
+      ..addFlag('json', help: 'Output as JSON');
   }
 
   try {
@@ -198,8 +184,7 @@ void printResults(List<Map<String, dynamic>> results) {
   }
 }
 
-Future<void> saveResults(
-    List<Map<String, dynamic>> results, String filename) async {
+Future<void> saveResults(List<Map<String, dynamic>> results, String filename) async {
   final file = File(filename);
 
   if (filename.endsWith('.json')) {

@@ -1,79 +1,78 @@
-# Dart & Flutter
-# Files and directories created by pub/dart
+# Dart
 .dart_tool/
 .packages
 build/
-pubspec.lock  # Uncomment if creating an application
-# If you're creating a package, comment out the line above
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+*.info.json
+
+# IntelliJ/Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+
+# VSCode
+.vscode/
+*.code-workspace
 
 # Generated files
 *.g.dart
 *.freezed.dart
 *.mocks.dart
-
-# IDE - IntelliJ/Android Studio
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# IDE - VSCode
-.vscode/
-# Uncomment the line above if you don't want to commit VSCode settings
-# Current project keeps .vscode/ for shared team settings
+*.config.dart
 
 # Test coverage
 coverage/
 .test_coverage.dart
+lcov.info
 
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
+# Documentation
+doc/api/
+.dartdoc/
 
-# Environment variables
+# Environment
 .env
 .env.local
+.env.*.local
 .envrc
-
-# Build outputs
-*.js_
-*.js.deps
-*.js.map
-
-# Generated documentation
-doc/api/
 
 # Temporary files
 *.tmp
+*.temp
 *.bak
 *.backup
+*.swp
 *~
+.fuse_hidden*
 
-# OS specific
-Thumbs.db
+# OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-# Distribution / Packaging
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
 dist/
+out/
 *.tar.gz
 *.zip
 
-# Dependency directories (if vendoring)
-packages/
-vendor/
-
-# Analysis & Linting
-.analysis_options_user
-.analyzer_plugin
-
-# Pub credentials (NEVER commit this!)
+# Pub credentials
 .pub-cache/
 credentials.json
+pub_credentials.json
 

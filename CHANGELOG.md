@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Package maintenance update
 
+## [0.1.2] - 2025-10-09
+
+### Changed
+- Updated repository URLs to kamranxdev/ddgs
+- Updated copyright holder to kamranxdev
+
 ## [0.1.0] - 2025-10-09
 
 ### Added

@@ -16,7 +16,7 @@ Thank you for your interest in contributing to DDGS! We welcome contributions fr
 
 1. **Fork the repository**
    ```bash
-   git clone https://github.com/Kamran1819G/ddgs.git
+   git clone https://github.com/kamranxdev/ddgs.git
    cd ddgs
    ```
 
@@ -198,8 +198,8 @@ Future<List<Map<String, dynamic>>> text(String query, {int? maxResults});
 ## Need Help?
 
 - 📖 Read the [README](README.md)
-- 🐛 Check [existing issues](https://github.com/Kamran1819G/ddgs/issues)
-- 💬 Start a [discussion](https://github.com/Kamran1819G/ddgs/discussions)
+- 🐛 Check [existing issues](https://github.com/kamranxdev/ddgs/issues)
+- 💬 Start a [discussion](https://github.com/kamranxdev/ddgs/discussions)
 - 📧 Contact maintainers
 
 ## License

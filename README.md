@@ -313,9 +313,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📖 [Documentation](https://github.com/Kamran1819G/ddgs#readme)
-- 🐛 [Issue Tracker](https://github.com/Kamran1819G/ddgs/issues)
-- 💬 [Discussions](https://github.com/Kamran1819G/ddgs/discussions)
+- 📖 [Documentation](https://github.com/kamranxdev/ddgs#readme)
+- 🐛 [Issue Tracker](https://github.com/kamranxdev/ddgs/issues)
+- 💬 [Discussions](https://github.com/kamranxdev/ddgs/discussions)
 
 ## Roadmap
 

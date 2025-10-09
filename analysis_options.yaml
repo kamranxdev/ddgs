@@ -1,0 +1,14 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    - always_declare_return_types
+    - always_put_required_named_parameters_first
+    - annotate_overrides
+    - avoid_print
+    - avoid_redundant_argument_values
+    - avoid_returning_null_for_void
+    - prefer_const_constructors
+    - prefer_final_fields
+    - prefer_single_quotes
+    - unawaited_futures

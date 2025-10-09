@@ -1,0 +1,46 @@
+name: Dart CI
+
+on:
+  push:
+    branches: [ main, master, develop, '*' ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        dart-version: ['3.0.0', 'stable']
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.dart-version }}
+      
+      - name: Print Dart version
+        run: dart --version
+      
+      - name: Install dependencies
+        run: dart pub get
+      
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+        if: matrix.os == 'ubuntu-latest' && matrix.dart-version == 'stable'
+      
+      - name: Analyze project source
+        run: dart analyze --fatal-infos
+      
+      - name: Run tests
+        run: dart test
+      
+      - name: Test CLI
+        run: |
+          dart run bin/ddgs.dart text -q "test" -m 2 -b duckduckgo --json
+        shell: bash

@@ -15,7 +15,8 @@ String? unwrapBingUrl(String rawUrl) {
     // Drop first two characters, pad to multiple of 4, then decode
     final b64Part = uVals.substring(2);
     final padding = '=' * (4 - b64Part.length % 4);
-    final decoded = base64Url.decode(b64Part + (padding == '====' ? '' : padding));
+    final decoded =
+        base64Url.decode(b64Part + (padding == '====' ? '' : padding));
     return utf8.decode(decoded);
   } catch (e) {
     return null;
@@ -72,7 +73,9 @@ class BingEngine extends BaseSearchEngine<TextResult> {
 
     if (timelimit != null) {
       final d = (DateTime.now().millisecondsSinceEpoch / 86400000).floor();
-      final code = timelimit == 'y' ? 'ez5_${d - 365}_$d' : 'ez${{'d': '1', 'w': '2', 'm': '3'}[timelimit]}';
+      final code = timelimit == 'y'
+          ? 'ez5_${d - 365}_$d'
+          : 'ez${{'d': '1', 'w': '2', 'm': '3'}[timelimit]}';
       payload['filters'] = 'ex1:"$code"';
     }
 
@@ -104,7 +107,8 @@ class BingEngine extends BaseSearchEngine<TextResult> {
         href = unwrapBingUrl(href) ?? href;
       }
 
-      if ((title.isNotEmpty || href.isNotEmpty) && !href.startsWith('https://www.bing.com/aclick?')) {
+      if ((title.isNotEmpty || href.isNotEmpty) &&
+          !href.startsWith('https://www.bing.com/aclick?')) {
         results.add(TextResult(title: title, href: href, body: body));
       }
     }

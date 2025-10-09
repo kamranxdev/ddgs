@@ -1,8 +1,9 @@
 /// CLI tool for DDGS.
 library;
 
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:ddgs/ddgs.dart';
 
@@ -22,16 +23,42 @@ void main(List<String> arguments) async {
   for (final cmd in ['text', 'images', 'videos', 'news', 'books']) {
     parser.commands[cmd]!
       ..addOption('query', abbr: 'q', help: 'Search query', mandatory: true)
-      ..addOption('region', abbr: 'r', help: 'Region (e.g., us-en)', defaultsTo: 'us-en')
-      ..addOption('safesearch', abbr: 's', help: 'Safe search (on/moderate/off)', defaultsTo: 'moderate')
+      ..addOption(
+        'region',
+        abbr: 'r',
+        help: 'Region (e.g., us-en)',
+        defaultsTo: 'us-en',
+      )
+      ..addOption(
+        'safesearch',
+        abbr: 's',
+        help: 'Safe search (on/moderate/off)',
+        defaultsTo: 'moderate',
+      )
       ..addOption('timelimit', abbr: 't', help: 'Time limit (d/w/m/y)')
-      ..addOption('max-results', abbr: 'm', help: 'Maximum results', defaultsTo: '10')
+      ..addOption(
+        'max-results',
+        abbr: 'm',
+        help: 'Maximum results',
+        defaultsTo: '10',
+      )
       ..addOption('page', abbr: 'p', help: 'Page number', defaultsTo: '1')
-      ..addOption('backend',
-          abbr: 'b',
-          help: 'Search backend to use (recommended: duckduckgo)',
-          defaultsTo: 'duckduckgo',
-          allowed: ['auto', 'bing', 'brave', 'duckduckgo', 'mojeek', 'yahoo', 'yandex', 'wikipedia'])
+      ..addOption(
+        'backend',
+        abbr: 'b',
+        help: 'Search backend to use (recommended: duckduckgo)',
+        defaultsTo: 'duckduckgo',
+        allowed: [
+          'auto',
+          'bing',
+          'brave',
+          'duckduckgo',
+          'mojeek',
+          'yahoo',
+          'yandex',
+          'wikipedia',
+        ],
+      )
       ..addOption('proxy', help: 'Proxy URL')
       ..addOption('output', abbr: 'o', help: 'Output file (json or csv)')
       ..addFlag('json', help: 'Output as JSON');
@@ -40,12 +67,12 @@ void main(List<String> arguments) async {
   try {
     final results = parser.parse(arguments);
 
-    if (results['version']) {
-      print('DDGS version $version');
+    if (results['version'] == true) {
+      stdout.writeln('DDGS version $version');
       exit(0);
     }
 
-    if (results['help'] || results.command == null) {
+    if (results['help'] == true || results.command == null) {
       printUsage(parser);
       exit(0);
     }
@@ -53,33 +80,37 @@ void main(List<String> arguments) async {
     final command = results.command!;
     await executeCommand(command);
   } on FormatException catch (e) {
-    print('Error: ${e.message}');
-    print('');
+    stderr
+      ..writeln('Error: ${e.message}')
+      ..writeln('');
     printUsage(parser);
     exit(1);
-  } catch (e) {
-    print('Error: $e');
+  } on Exception catch (e) {
+    stderr.writeln('Error: $e');
     exit(1);
   }
 }
 
 void printUsage(ArgParser parser) {
-  print('DDGS | Dux Distributed Global Search');
-  print('');
-  print('Usage: ddgs <command> [options]');
-  print('');
-  print('Commands:');
-  print('  text      Text search');
-  print('  images    Image search');
-  print('  videos    Video search');
-  print('  news      News search');
-  print('  books     Books search');
-  print('');
-  print('Options:');
-  print(parser.usage);
-  print('');
-  print('Example:');
-  print('  ddgs text -q "python programming" -r us-en -m 5 -b duckduckgo');
+  stdout
+    ..writeln('DDGS | Dux Distributed Global Search')
+    ..writeln('')
+    ..writeln('Usage: ddgs <command> [options]')
+    ..writeln('')
+    ..writeln('Commands:')
+    ..writeln('  text      Text search')
+    ..writeln('  images    Image search')
+    ..writeln('  videos    Video search')
+    ..writeln('  news      News search')
+    ..writeln('  books     Books search')
+    ..writeln('')
+    ..writeln('Options:')
+    ..writeln(parser.usage)
+    ..writeln('')
+    ..writeln('Example:')
+    ..writeln(
+      '  ddgs text -q "python programming" -r us-en -m 5 -b duckduckgo',
+    );
 }
 
 Future<void> executeCommand(ArgResults command) async {
@@ -160,9 +191,9 @@ Future<void> executeCommand(ArgResults command) async {
 
     if (outputFile != null) {
       await saveResults(results, outputFile);
-      print('Results saved to $outputFile');
+      stdout.writeln('Results saved to $outputFile');
     } else if (jsonOutput) {
-      print(jsonEncode(results));
+      stdout.writeln(jsonEncode(results));
     } else {
       printResults(results);
     }
@@ -173,18 +204,22 @@ Future<void> executeCommand(ArgResults command) async {
 
 void printResults(List<Map<String, dynamic>> results) {
   for (var i = 0; i < results.length; i++) {
-    print('${i + 1}. ${'=' * 70}');
+    stdout
+      ..writeln('${i + 1}. ${'=' * 70}')
+      ..writeln('');
     final result = results[i];
     result.forEach((key, value) {
       if (value != null && value.toString().isNotEmpty) {
-        print('$key: $value');
+        stdout.writeln('$key: $value');
       }
     });
-    print('');
   }
 }
 
-Future<void> saveResults(List<Map<String, dynamic>> results, String filename) async {
+Future<void> saveResults(
+  List<Map<String, dynamic>> results,
+  String filename,
+) async {
   final file = File(filename);
 
   if (filename.endsWith('.json')) {

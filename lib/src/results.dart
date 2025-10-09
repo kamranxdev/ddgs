@@ -215,7 +215,10 @@ class ResultsAggregator<T extends BaseResult> {
 
   void add(T result) {
     final json = result.toJson();
-    final key = _uniqueFields.map((field) => json[field]?.toString() ?? '').where((val) => val.isNotEmpty).join('|');
+    final key = _uniqueFields
+        .map((field) => json[field]?.toString() ?? '')
+        .where((val) => val.isNotEmpty)
+        .join('|');
 
     if (key.isNotEmpty && !_seenKeys.contains(key)) {
       _seenKeys.add(key);

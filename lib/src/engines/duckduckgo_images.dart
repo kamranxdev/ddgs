@@ -77,11 +77,13 @@ class DuckDuckGoImagesEngine extends BaseSearchEngine<ImagesResult> {
     if (extra != null) {
       if (extra['size'] != null) filters.add('size:${extra['size']}');
       if (extra['color'] != null) filters.add('color:${extra['color']}');
-      if (extra['type_image'] != null)
+      if (extra['type_image'] != null) {
         filters.add('type:${extra['type_image']}');
+      }
       if (extra['layout'] != null) filters.add('layout:${extra['layout']}');
-      if (extra['license_image'] != null)
+      if (extra['license_image'] != null) {
         filters.add('license:${extra['license_image']}');
+      }
     }
 
     if (filters.isNotEmpty) {
@@ -150,7 +152,7 @@ class DuckDuckGoImagesEngine extends BaseSearchEngine<ImagesResult> {
           height: item['height']?.toString() ?? '',
           width: item['width']?.toString() ?? '',
           source: item['source']?.toString() ?? '',
-        ));
+        ),);
       }
     } catch (e) {
       // Return empty list on parse error

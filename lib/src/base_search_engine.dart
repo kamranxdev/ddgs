@@ -1,13 +1,24 @@
 /// Base class for search engines.
 library;
 
-import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
+import 'package:html/parser.dart' as html_parser;
+
 import 'http_client.dart';
 import 'results.dart';
 
 /// Abstract base class for all search-engine backends.
 abstract class BaseSearchEngine<T extends BaseResult> {
+
+  BaseSearchEngine({
+    String? proxy,
+    Duration? timeout,
+    bool verify = true,
+  }) : httpClient = HttpClient(
+          proxy: proxy,
+          timeout: timeout,
+          verify: verify,
+        );
   /// Unique key, e.g. "google"
   String get name;
 
@@ -21,7 +32,7 @@ abstract class BaseSearchEngine<T extends BaseResult> {
   bool get disabled => false;
 
   /// Engine priority
-  double get priority => 1.0;
+  double get priority => 1;
 
   /// Search URL
   String get searchUrl;
@@ -40,16 +51,6 @@ abstract class BaseSearchEngine<T extends BaseResult> {
 
   final HttpClient httpClient;
   final List<T> results = [];
-
-  BaseSearchEngine({
-    String? proxy,
-    Duration? timeout,
-    bool verify = true,
-  }) : httpClient = HttpClient(
-          proxy: proxy,
-          timeout: timeout,
-          verify: verify,
-        );
 
   /// Build a payload for the search request.
   Map<String, String> buildPayload({
@@ -88,22 +89,16 @@ abstract class BaseSearchEngine<T extends BaseResult> {
   }
 
   /// Extract HTML document from text.
-  Document extractTree(String htmlText) {
-    return html_parser.parse(htmlText);
-  }
+  Document extractTree(String htmlText) => html_parser.parse(htmlText);
 
   /// Pre-process HTML text before extracting results.
-  String preProcessHtml(String htmlText) {
-    return htmlText;
-  }
+  String preProcessHtml(String htmlText) => htmlText;
 
   /// Extract search results from HTML text.
   List<T> extractResults(String htmlText);
 
   /// Post-process search results.
-  List<T> postExtractResults(List<T> results) {
-    return results;
-  }
+  List<T> postExtractResults(List<T> results) => results;
 
   /// Search the engine.
   Future<List<T>?> search({

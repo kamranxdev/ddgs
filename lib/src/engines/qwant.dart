@@ -213,7 +213,7 @@ class QwantImagesEngine extends BaseSearchEngine<ImagesResult> {
               width: width,
               height: height,
               source: 'qwant',
-            ));
+            ),);
           }
         }
       }
@@ -304,7 +304,7 @@ class QwantNewsEngine extends BaseSearchEngine<NewsResult> {
               date: date,
               source: source,
               image: thumbnail ?? '',
-            ));
+            ),);
           }
         }
       }

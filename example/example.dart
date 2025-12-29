@@ -1,4 +1,5 @@
 /// Example usage of DDGS library.
+library;
 
 import 'package:ddgs/ddgs.dart';
 

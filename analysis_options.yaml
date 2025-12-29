@@ -4,6 +4,7 @@ analyzer:
   exclude:
     - build/**
     - .dart_tool/**
+    - example/**
   language:
     strict-casts: true
     strict-inference: true
@@ -13,6 +14,16 @@ analyzer:
     missing_return: error
     todo: ignore
     deprecated_member_use_from_same_package: ignore
+    # Disable overly strict info rules
+    avoid_print: ignore
+    lines_longer_than_80_chars: ignore
+    avoid_catches_without_on_clauses: ignore
+    cascade_invocations: ignore
+    sort_constructors_first: ignore
+    prefer_constructors_over_static_methods: ignore
+    parameter_assignments: ignore
+    use_named_constants: ignore
+    dangling_library_doc_comments: ignore
 
 linter:
   rules:

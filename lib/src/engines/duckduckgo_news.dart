@@ -126,7 +126,7 @@ class DuckDuckGoNewsEngine extends BaseSearchEngine<NewsResult> {
           url: item['url']?.toString() ?? '',
           image: item['image']?.toString() ?? '',
           source: item['source']?.toString() ?? '',
-        ));
+        ),);
       }
     } catch (e) {
       // Return empty list on parse error

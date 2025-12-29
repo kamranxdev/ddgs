@@ -5,19 +5,13 @@ import 'dart:convert';
 import 'exceptions.dart';
 
 /// Normalize text by trimming and collapsing whitespace.
-String normalizeText(String text) {
-  return text.trim().replaceAll(RegExp(r'\s+'), ' ');
-}
+String normalizeText(String text) => text.trim().replaceAll(RegExp(r'\s+'), ' ');
 
 /// Normalize URL by trimming.
-String normalizeUrl(String url) {
-  return url.trim();
-}
+String normalizeUrl(String url) => url.trim();
 
 /// Normalize date string.
-String normalizeDate(String date) {
-  return date.trim();
-}
+String normalizeDate(String date) => date.trim();
 
 /// Expand proxy alias 'tb' to Tor Browser proxy.
 String? expandProxyTbAlias(String? proxy) {
@@ -48,13 +42,13 @@ dynamic jsonDecode(String str) {
 /// Extract vqd value from HTML bytes for DuckDuckGo.
 String? extractVqd(String htmlContent, String query) {
   // Try pattern: vqd="..."
-  var match = RegExp(r'vqd="([^"]+)"').firstMatch(htmlContent);
+  var match = RegExp('vqd="([^"]+)"').firstMatch(htmlContent);
   if (match != null) {
     return match.group(1);
   }
 
   // Try pattern: vqd=...&
-  match = RegExp(r'vqd=([^&]+)&').firstMatch(htmlContent);
+  match = RegExp('vqd=([^&]+)&').firstMatch(htmlContent);
   if (match != null) {
     return match.group(1);
   }

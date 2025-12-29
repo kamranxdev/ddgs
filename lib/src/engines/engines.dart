@@ -25,7 +25,7 @@ final Map<
     Map<
         String,
         BaseSearchEngine Function(
-            {String? proxy, Duration? timeout, bool verify})>> engines = {
+            {String? proxy, Duration? timeout, bool verify,})>> engines = {
   'text': {
     'bing': ({proxy, timeout, verify = true}) =>
         BingEngine(proxy: proxy, timeout: timeout, verify: verify),
@@ -72,14 +72,10 @@ final Map<
 };
 
 /// Get list of all available engines for a category.
-List<String> getAvailableEngines(String category) {
-  return engines[category]?.keys.toList() ?? [];
-}
+List<String> getAvailableEngines(String category) => engines[category]?.keys.toList() ?? [];
 
 /// Get all supported categories.
 List<String> get supportedCategories => engines.keys.toList();
 
 /// Check if an engine is available for a category.
-bool isEngineAvailable(String category, String engine) {
-  return engines[category]?.containsKey(engine) ?? false;
-}
+bool isEngineAvailable(String category, String engine) => engines[category]?.containsKey(engine) ?? false;

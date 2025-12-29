@@ -150,7 +150,7 @@ class DuckDuckGoVideosEngine extends BaseSearchEngine<VideosResult> {
           statistics:
               statistics?.map((k, v) => MapEntry(k, v.toString())) ?? {},
           uploader: item['uploader']?.toString() ?? '',
-        ));
+        ),);
       }
     } catch (e) {
       // Return empty list on parse error

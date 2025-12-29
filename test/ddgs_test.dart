@@ -1,6 +1,6 @@
-import 'package:test/test.dart';
 import 'package:ddgs/ddgs.dart';
 import 'package:ddgs/src/utils.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('DDGS Tests', () {
@@ -46,7 +46,7 @@ void main() {
     });
 
     test('respects maxResults parameter', () async {
-      final maxResults = 5;
+      const maxResults = 5;
       final results = await ddgs.text('programming', maxResults: maxResults);
       // Engines aggregate results, so may return more than requested
       expect(results.length, greaterThan(0));
@@ -195,14 +195,6 @@ void main() {
   group('DDGS Configuration Tests', () {
     test('creates DDGS with custom timeout', () {
       final ddgs = DDGS(timeout: const Duration(seconds: 10));
-      expect(ddgs, isA<DDGS>());
-      ddgs.close();
-    });
-
-    test('creates DDGS with custom retry config', () {
-      final ddgs = DDGS(
-        retryConfig: const RetryConfig(maxRetries: 5),
-      );
       expect(ddgs, isA<DDGS>());
       ddgs.close();
     });
@@ -397,17 +389,17 @@ void main() {
         title: 'Test 1',
         image: 'https://example.com/img1.jpg',
         url: 'https://example.com/page1',
-      ));
+      ),);
       aggregator.add(ImagesResult(
         title: 'Test 2',
         image: 'https://example.com/img1.jpg',
         url: 'https://example.com/page1',
-      ));
+      ),);
       aggregator.add(ImagesResult(
         title: 'Test 3',
         image: 'https://example.com/img2.jpg',
         url: 'https://example.com/page2',
-      ));
+      ),);
 
       expect(aggregator.length, equals(2));
     });
@@ -415,7 +407,7 @@ void main() {
     test('ignores results with empty unique fields', () {
       final aggregator = ResultsAggregator<TextResult>({'href'});
 
-      aggregator.add(TextResult(title: 'Test', href: ''));
+      aggregator.add(TextResult(title: 'Test'));
       aggregator.add(TextResult(title: 'Test 2', href: 'https://example.com'));
 
       expect(aggregator.length, equals(1));
@@ -560,7 +552,7 @@ void main() {
       final cache = ResultCache(CacheConfig.memory);
       const options = SearchOptions();
       final results = [
-        {'title': 'Test', 'href': 'https://example.com'}
+        {'title': 'Test', 'href': 'https://example.com'},
       ];
 
       cache.put('text', 'query', options, results);
@@ -582,7 +574,7 @@ void main() {
       final cache = ResultCache(CacheConfig.memory);
       const options = SearchOptions();
       final results = [
-        {'title': 'Test'}
+        {'title': 'Test'},
       ];
 
       cache.put('text', 'query1', options, results);
@@ -980,18 +972,17 @@ void main() {
 
   group('SearchResultChunk Tests', () {
     test('SearchResultChunk has correct fields', () {
-      final chunk = SearchResultChunk<TextSearchResult>(
+      const chunk = SearchResultChunk<TextSearchResult>(
         results: [
-          const TextSearchResult(
+          TextSearchResult(
             title: 'Test',
             href: 'https://example.com',
             body: 'Body',
           ),
         ],
         engine: 'google',
-        isFinal: false,
         totalResultsSoFar: 1,
-        fetchDuration: const Duration(milliseconds: 500),
+        fetchDuration: Duration(milliseconds: 500),
       );
 
       expect(chunk.results.length, equals(1));
@@ -1001,7 +992,7 @@ void main() {
     });
 
     test('SearchResultChunk toString works', () {
-      final chunk = SearchResultChunk<TextSearchResult>(
+      const chunk = SearchResultChunk<TextSearchResult>(
         results: [],
         engine: 'test',
       );
@@ -1067,11 +1058,11 @@ void main() {
 
   group('SearchEvent Tests', () {
     test('ResultsEvent contains chunk', () {
-      final chunk = SearchResultChunk<TextSearchResult>(
+      const chunk = SearchResultChunk<TextSearchResult>(
         results: [],
         engine: 'test',
       );
-      final event = ResultsEvent<TextSearchResult>(chunk);
+      const event = ResultsEvent<TextSearchResult>(chunk);
 
       expect(event.chunk, equals(chunk));
     });
@@ -1136,7 +1127,7 @@ void main() {
 
     test('normalizeUrl trims whitespace', () {
       expect(normalizeUrl('  https://example.com  '),
-          equals('https://example.com'));
+          equals('https://example.com'),);
     });
 
     test('normalizeDate trims whitespace', () {
@@ -1149,22 +1140,22 @@ void main() {
         equals('socks5h://127.0.0.1:9150'),
       );
       expect(
-          expandProxyTbAlias('http://proxy.com'), equals('http://proxy.com'));
+          expandProxyTbAlias('http://proxy.com'), equals('http://proxy.com'),);
       expect(expandProxyTbAlias(null), isNull);
     });
 
     test('extractVqd extracts vqd from pattern vqd="..."', () {
-      final html = 'some content vqd="abc123" more content';
+      const html = 'some content vqd="abc123" more content';
       expect(extractVqd(html, 'query'), equals('abc123'));
     });
 
     test('extractVqd extracts vqd from pattern vqd=...&', () {
-      final html = 'some content vqd=xyz789&param=value';
+      const html = 'some content vqd=xyz789&param=value';
       expect(extractVqd(html, 'query'), equals('xyz789'));
     });
 
     test('extractVqd returns null when not found', () {
-      final html = 'some content without vqd';
+      const html = 'some content without vqd';
       expect(extractVqd(html, 'query'), isNull);
     });
   });
@@ -1228,14 +1219,14 @@ void main() {
       expect(ParallelSearchConfig.fast.maxConcurrency, equals(3));
       expect(ParallelSearchConfig.fast.minResults, equals(3));
       expect(ParallelSearchConfig.fast.maxWaitTime,
-          equals(const Duration(seconds: 5)));
+          equals(const Duration(seconds: 5)),);
     });
 
     test('ParallelSearchConfig.comprehensive has correct values', () {
       expect(ParallelSearchConfig.comprehensive.maxConcurrency, equals(10));
       expect(ParallelSearchConfig.comprehensive.minResults, equals(20));
       expect(ParallelSearchConfig.comprehensive.mergeStrategy,
-          equals(MergeStrategy.byRelevance));
+          equals(MergeStrategy.byRelevance),);
     });
   });
 
@@ -1250,10 +1241,10 @@ void main() {
 
   group('EngineResult Tests', () {
     test('EngineResult success is true when no error', () {
-      final result = EngineResult<TextSearchResult>(
+      const result = EngineResult<TextSearchResult>(
         engine: 'google',
         results: [],
-        duration: const Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 500),
       );
 
       expect(result.success, isTrue);
@@ -1261,10 +1252,10 @@ void main() {
     });
 
     test('EngineResult success is false when error', () {
-      final result = EngineResult<TextSearchResult>(
+      const result = EngineResult<TextSearchResult>(
         engine: 'google',
         results: [],
-        duration: const Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 500),
         error: 'Connection failed',
       );
 

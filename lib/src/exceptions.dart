@@ -3,9 +3,9 @@ library;
 
 /// Base exception class for ddgs.
 class DDGSException implements Exception {
-  final String message;
 
   DDGSException(this.message);
+  final String message;
 
   @override
   String toString() => 'DDGSException: $message';

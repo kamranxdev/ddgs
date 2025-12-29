@@ -5,36 +5,29 @@ import 'results.dart';
 
 /// Sealed class representing any search result type.
 sealed class SearchResult {
+
+  const SearchResult({this.provider, this.relevanceScore});
   /// The search engine/provider that returned this result.
   final String? provider;
 
   /// Relevance score (0-100) for ranking.
   final int? relevanceScore;
 
-  const SearchResult({this.provider, this.relevanceScore});
-
   /// Convert to JSON map.
   Map<String, dynamic> toJson();
 
   /// Create from JSON map based on result type.
-  static SearchResult fromJson(Map<String, dynamic> json, String type) {
-    return switch (type) {
+  static SearchResult fromJson(Map<String, dynamic> json, String type) => switch (type) {
       'text' => TextSearchResult.fromJson(json),
       'image' => ImageSearchResult.fromJson(json),
       'video' => VideoSearchResult.fromJson(json),
       'news' => NewsSearchResult.fromJson(json),
       _ => TextSearchResult.fromJson(json),
     };
-  }
 }
 
 /// Text search result with full metadata.
 final class TextSearchResult extends SearchResult {
-  final String title;
-  final String href;
-  final String body;
-  final String? favicon;
-  final DateTime? publishedDate;
 
   const TextSearchResult({
     required this.title,
@@ -46,8 +39,7 @@ final class TextSearchResult extends SearchResult {
     super.relevanceScore,
   });
 
-  factory TextSearchResult.fromJson(Map<String, dynamic> json) {
-    return TextSearchResult(
+  factory TextSearchResult.fromJson(Map<String, dynamic> json) => TextSearchResult(
       title: json['title'] as String? ?? '',
       href: json['href'] as String? ?? json['url'] as String? ?? '',
       body: json['body'] as String? ?? json['description'] as String? ?? '',
@@ -55,16 +47,18 @@ final class TextSearchResult extends SearchResult {
       provider: json['provider'] as String?,
       relevanceScore: json['relevanceScore'] as int?,
     );
-  }
 
-  factory TextSearchResult.fromTextResult(TextResult result, {String? provider}) {
-    return TextSearchResult(
+  factory TextSearchResult.fromTextResult(TextResult result, {String? provider}) => TextSearchResult(
       title: result.title,
       href: result.href,
       body: result.body,
       provider: provider,
     );
-  }
+  final String title;
+  final String href;
+  final String body;
+  final String? favicon;
+  final DateTime? publishedDate;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -91,15 +85,6 @@ final class TextSearchResult extends SearchResult {
 
 /// Image search result with dimensions and source info.
 final class ImageSearchResult extends SearchResult {
-  final String title;
-  final String imageUrl;
-  final String thumbnailUrl;
-  final String sourceUrl;
-  final int? width;
-  final int? height;
-  final String? source;
-  final String? format;
-  final int? fileSize;
 
   const ImageSearchResult({
     required this.title,
@@ -115,8 +100,7 @@ final class ImageSearchResult extends SearchResult {
     super.relevanceScore,
   });
 
-  factory ImageSearchResult.fromJson(Map<String, dynamic> json) {
-    return ImageSearchResult(
+  factory ImageSearchResult.fromJson(Map<String, dynamic> json) => ImageSearchResult(
       title: json['title'] as String? ?? '',
       imageUrl: json['image'] as String? ?? '',
       thumbnailUrl: json['thumbnail'] as String? ?? '',
@@ -128,10 +112,8 @@ final class ImageSearchResult extends SearchResult {
       fileSize: json['fileSize'] as int?,
       provider: json['provider'] as String?,
     );
-  }
 
-  factory ImageSearchResult.fromImagesResult(ImagesResult result, {String? provider}) {
-    return ImageSearchResult(
+  factory ImageSearchResult.fromImagesResult(ImagesResult result, {String? provider}) => ImageSearchResult(
       title: result.title,
       imageUrl: result.image,
       thumbnailUrl: result.thumbnail,
@@ -141,7 +123,15 @@ final class ImageSearchResult extends SearchResult {
       source: result.source,
       provider: provider,
     );
-  }
+  final String title;
+  final String imageUrl;
+  final String thumbnailUrl;
+  final String sourceUrl;
+  final int? width;
+  final int? height;
+  final String? source;
+  final String? format;
+  final int? fileSize;
 
   /// Aspect ratio of the image (width/height).
   double? get aspectRatio {
@@ -177,16 +167,6 @@ final class ImageSearchResult extends SearchResult {
 
 /// Video search result with duration and embed info.
 final class VideoSearchResult extends SearchResult {
-  final String title;
-  final String description;
-  final String embedUrl;
-  final String? embedHtml;
-  final String? thumbnailUrl;
-  final Duration? duration;
-  final String? publisher;
-  final DateTime? publishedDate;
-  final int? viewCount;
-  final String? uploader;
 
   const VideoSearchResult({
     required this.title,
@@ -203,8 +183,7 @@ final class VideoSearchResult extends SearchResult {
     super.relevanceScore,
   });
 
-  factory VideoSearchResult.fromJson(Map<String, dynamic> json) {
-    return VideoSearchResult(
+  factory VideoSearchResult.fromJson(Map<String, dynamic> json) => VideoSearchResult(
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? json['content'] as String? ?? '',
       embedUrl: json['embed_url'] as String? ?? '',
@@ -215,10 +194,8 @@ final class VideoSearchResult extends SearchResult {
       uploader: json['uploader'] as String?,
       provider: json['provider'] as String?,
     );
-  }
 
-  factory VideoSearchResult.fromVideosResult(VideosResult result, {String? provider}) {
-    return VideoSearchResult(
+  factory VideoSearchResult.fromVideosResult(VideosResult result, {String? provider}) => VideoSearchResult(
       title: result.title,
       description: result.description.isNotEmpty ? result.description : result.content,
       embedUrl: result.embedUrl,
@@ -228,7 +205,16 @@ final class VideoSearchResult extends SearchResult {
       uploader: result.uploader,
       provider: provider ?? result.provider,
     );
-  }
+  final String title;
+  final String description;
+  final String embedUrl;
+  final String? embedHtml;
+  final String? thumbnailUrl;
+  final Duration? duration;
+  final String? publisher;
+  final DateTime? publishedDate;
+  final int? viewCount;
+  final String? uploader;
 
   static Duration? _parseDuration(String? durationStr) {
     if (durationStr == null || durationStr.isEmpty) return null;
@@ -276,14 +262,6 @@ final class VideoSearchResult extends SearchResult {
 
 /// News search result with source and date info.
 final class NewsSearchResult extends SearchResult {
-  final String title;
-  final String body;
-  final String url;
-  final String? imageUrl;
-  final String? source;
-  final DateTime? publishedDate;
-  final String? author;
-  final String? category;
 
   const NewsSearchResult({
     required this.title,
@@ -298,8 +276,7 @@ final class NewsSearchResult extends SearchResult {
     super.relevanceScore,
   });
 
-  factory NewsSearchResult.fromJson(Map<String, dynamic> json) {
-    return NewsSearchResult(
+  factory NewsSearchResult.fromJson(Map<String, dynamic> json) => NewsSearchResult(
       title: json['title'] as String? ?? '',
       body: json['body'] as String? ?? '',
       url: json['url'] as String? ?? '',
@@ -310,10 +287,8 @@ final class NewsSearchResult extends SearchResult {
       category: json['category'] as String?,
       provider: json['provider'] as String?,
     );
-  }
 
-  factory NewsSearchResult.fromNewsResult(NewsResult result, {String? provider}) {
-    return NewsSearchResult(
+  factory NewsSearchResult.fromNewsResult(NewsResult result, {String? provider}) => NewsSearchResult(
       title: result.title,
       body: result.body,
       url: result.url,
@@ -322,7 +297,14 @@ final class NewsSearchResult extends SearchResult {
       publishedDate: DateTime.tryParse(result.date),
       provider: provider,
     );
-  }
+  final String title;
+  final String body;
+  final String url;
+  final String? imageUrl;
+  final String? source;
+  final DateTime? publishedDate;
+  final String? author;
+  final String? category;
 
   /// Check if the news is recent (within last 24 hours).
   bool get isRecent {

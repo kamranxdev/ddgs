@@ -80,9 +80,7 @@ void main(List<String> arguments) async {
     final command = results.command!;
     await executeCommand(command);
   } on FormatException catch (e) {
-    stderr
-      ..writeln('Error: ${e.message}')
-      ..writeln('');
+    stderr.writeln('Error: ${e.message}');
     printUsage(parser);
     exit(1);
   } on Exception catch (e) {
@@ -94,19 +92,19 @@ void main(List<String> arguments) async {
 void printUsage(ArgParser parser) {
   stdout
     ..writeln('DDGS | Dux Distributed Global Search')
-    ..writeln('')
+    ..writeln()
     ..writeln('Usage: ddgs <command> [options]')
-    ..writeln('')
+    ..writeln()
     ..writeln('Commands:')
     ..writeln('  text      Text search')
     ..writeln('  images    Image search')
     ..writeln('  videos    Video search')
     ..writeln('  news      News search')
     ..writeln('  books     Books search')
-    ..writeln('')
+    ..writeln()
     ..writeln('Options:')
     ..writeln(parser.usage)
-    ..writeln('')
+    ..writeln()
     ..writeln('Example:')
     ..writeln(
       '  ddgs text -q "python programming" -r us-en -m 5 -b duckduckgo',
@@ -206,7 +204,7 @@ void printResults(List<Map<String, dynamic>> results) {
   for (var i = 0; i < results.length; i++) {
     stdout
       ..writeln('${i + 1}. ${'=' * 70}')
-      ..writeln('');
+      ..writeln();
     final result = results[i];
     result.forEach((key, value) {
       if (value != null && value.toString().isNotEmpty) {

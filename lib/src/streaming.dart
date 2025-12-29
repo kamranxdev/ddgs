@@ -6,6 +6,14 @@ import 'search_result.dart';
 
 /// Represents a chunk of search results with metadata.
 class SearchResultChunk<T extends SearchResult> {
+
+  const SearchResultChunk({
+    required this.results,
+    required this.engine,
+    this.isFinal = false,
+    this.totalResultsSoFar = 0,
+    this.fetchDuration = Duration.zero,
+  });
   /// The results in this chunk.
   final List<T> results;
 
@@ -21,14 +29,6 @@ class SearchResultChunk<T extends SearchResult> {
   /// Time taken to fetch this chunk.
   final Duration fetchDuration;
 
-  const SearchResultChunk({
-    required this.results,
-    required this.engine,
-    this.isFinal = false,
-    this.totalResultsSoFar = 0,
-    this.fetchDuration = Duration.zero,
-  });
-
   @override
   String toString() => 'SearchResultChunk(engine: $engine, '
       'results: ${results.length}, isFinal: $isFinal)';
@@ -36,6 +36,15 @@ class SearchResultChunk<T extends SearchResult> {
 
 /// Progress information for streaming searches.
 class SearchProgress {
+
+  const SearchProgress({
+    required this.enginesQueried,
+    required this.totalEngines,
+    required this.resultsFound,
+    this.completedEngines = const [],
+    this.failedEngines = const [],
+    this.status = '',
+  });
   /// Number of engines queried so far.
   final int enginesQueried;
 
@@ -53,15 +62,6 @@ class SearchProgress {
 
   /// Current status message.
   final String status;
-
-  const SearchProgress({
-    required this.enginesQueried,
-    required this.totalEngines,
-    required this.resultsFound,
-    this.completedEngines = const [],
-    this.failedEngines = const [],
-    this.status = '',
-  });
 
   /// Progress percentage (0-100).
   double get progressPercent =>
@@ -82,34 +82,34 @@ sealed class SearchEvent<T extends SearchResult> {
 
 /// New results received event.
 class ResultsEvent<T extends SearchResult> extends SearchEvent<T> {
-  final SearchResultChunk<T> chunk;
   const ResultsEvent(this.chunk);
+  final SearchResultChunk<T> chunk;
 }
 
 /// Progress update event.
 class ProgressEvent<T extends SearchResult> extends SearchEvent<T> {
-  final SearchProgress progress;
   const ProgressEvent(this.progress);
+  final SearchProgress progress;
 }
 
 /// Error event (non-fatal, search continues).
 class ErrorEvent<T extends SearchResult> extends SearchEvent<T> {
+  const ErrorEvent(this.engine, this.error);
   final String engine;
   final String error;
-  const ErrorEvent(this.engine, this.error);
 }
 
 /// Search completed event.
 class CompletedEvent<T extends SearchResult> extends SearchEvent<T> {
-  final List<T> allResults;
-  final Duration totalDuration;
-  final SearchProgress finalProgress;
 
   const CompletedEvent({
     required this.allResults,
     required this.totalDuration,
     required this.finalProgress,
   });
+  final List<T> allResults;
+  final Duration totalDuration;
+  final SearchProgress finalProgress;
 }
 
 /// Streaming search controller for managing async search operations.
@@ -161,7 +161,7 @@ class StreamingSearchController<T extends SearchResult> {
           ? DateTime.now().difference(_startTime!)
           : Duration.zero,
       finalProgress: finalProgress,
-    ));
+    ),);
     _controller.close();
   }
 
@@ -179,14 +179,14 @@ class StreamingSearchController<T extends SearchResult> {
 
 /// Rate limiter to prevent overwhelming search engines.
 class RateLimiter {
-  final int maxRequestsPerSecond;
-  final Duration windowDuration;
-  final Map<String, List<DateTime>> _requestTimes = {};
 
   RateLimiter({
     this.maxRequestsPerSecond = 5,
     this.windowDuration = const Duration(seconds: 1),
   });
+  final int maxRequestsPerSecond;
+  final Duration windowDuration;
+  final Map<String, List<DateTime>> _requestTimes = {};
 
   /// Check if a request can be made to the given engine.
   bool canMakeRequest(String engine) {
@@ -234,6 +234,14 @@ class RateLimiter {
 
 /// Retry configuration for failed requests.
 class RetryConfig {
+
+  const RetryConfig({
+    this.maxRetries = 3,
+    this.baseDelay = const Duration(milliseconds: 500),
+    this.maxDelay = const Duration(seconds: 10),
+    this.exponentialBackoff = true,
+    this.retryableStatusCodes = const {408, 429, 500, 502, 503, 504},
+  });
   /// Maximum number of retry attempts.
   final int maxRetries;
 
@@ -248,14 +256,6 @@ class RetryConfig {
 
   /// HTTP status codes that should trigger a retry.
   final Set<int> retryableStatusCodes;
-
-  const RetryConfig({
-    this.maxRetries = 3,
-    this.baseDelay = const Duration(milliseconds: 500),
-    this.maxDelay = const Duration(seconds: 10),
-    this.exponentialBackoff = true,
-    this.retryableStatusCodes = const {408, 429, 500, 502, 503, 504},
-  });
 
   /// No retries.
   static const none = RetryConfig(maxRetries: 0);

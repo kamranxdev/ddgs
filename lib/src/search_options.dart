@@ -24,12 +24,10 @@ enum SearchRegion {
   const SearchRegion(this.code, this.displayName);
 
   /// Parse region code to enum.
-  static SearchRegion fromCode(String code) {
-    return SearchRegion.values.firstWhere(
+  static SearchRegion fromCode(String code) => SearchRegion.values.firstWhere(
       (r) => r.code == code.toLowerCase(),
       orElse: () => SearchRegion.global,
     );
-  }
 }
 
 /// Safe search level options.
@@ -60,6 +58,21 @@ enum TimeLimit {
 
 /// Search options configuration.
 class SearchOptions {
+
+  const SearchOptions({
+    this.region = SearchRegion.usEnglish,
+    this.safeSearch = SafeSearchLevel.moderate,
+    this.timeLimit = TimeLimit.none,
+    this.maxResults = 10,
+    this.page = 1,
+    this.backend = 'auto',
+    this.includeMetadata = false,
+    this.minRelevanceScore,
+    this.language,
+    this.fileType,
+    this.imageSize,
+    this.imageColor,
+  });
   /// Search region for localized results.
   final SearchRegion region;
 
@@ -96,21 +109,6 @@ class SearchOptions {
   /// Image color filter.
   final ImageColor? imageColor;
 
-  const SearchOptions({
-    this.region = SearchRegion.usEnglish,
-    this.safeSearch = SafeSearchLevel.moderate,
-    this.timeLimit = TimeLimit.none,
-    this.maxResults = 10,
-    this.page = 1,
-    this.backend = 'auto',
-    this.includeMetadata = false,
-    this.minRelevanceScore,
-    this.language,
-    this.fileType,
-    this.imageSize,
-    this.imageColor,
-  });
-
   /// Create a copy with modified values.
   SearchOptions copyWith({
     SearchRegion? region,
@@ -125,8 +123,7 @@ class SearchOptions {
     String? fileType,
     ImageSize? imageSize,
     ImageColor? imageColor,
-  }) {
-    return SearchOptions(
+  }) => SearchOptions(
       region: region ?? this.region,
       safeSearch: safeSearch ?? this.safeSearch,
       timeLimit: timeLimit ?? this.timeLimit,
@@ -140,7 +137,6 @@ class SearchOptions {
       imageSize: imageSize ?? this.imageSize,
       imageColor: imageColor ?? this.imageColor,
     );
-  }
 
   /// Default options for quick searches.
   static const quick = SearchOptions(maxResults: 5);
@@ -148,7 +144,6 @@ class SearchOptions {
   /// Options optimized for comprehensive results.
   static const comprehensive = SearchOptions(
     maxResults: 50,
-    backend: 'auto',
     includeMetadata: true,
   );
 
@@ -189,6 +184,13 @@ enum ImageColor {
 
 /// Search result caching configuration.
 class CacheConfig {
+
+  const CacheConfig({
+    this.enabled = false,
+    this.ttl = const Duration(minutes: 15),
+    this.maxEntries = 100,
+    this.cacheDirectory,
+  });
   /// Whether caching is enabled.
   final bool enabled;
 
@@ -201,15 +203,8 @@ class CacheConfig {
   /// Cache storage directory (null for memory-only).
   final String? cacheDirectory;
 
-  const CacheConfig({
-    this.enabled = false,
-    this.ttl = const Duration(minutes: 15),
-    this.maxEntries = 100,
-    this.cacheDirectory,
-  });
-
   /// Disabled cache config.
-  static const disabled = CacheConfig(enabled: false);
+  static const disabled = CacheConfig();
 
   /// Memory-only cache with 15-minute TTL.
   static const memory = CacheConfig(enabled: true);
@@ -224,15 +219,15 @@ class CacheConfig {
 
 /// In-memory result cache with TTL support.
 class ResultCache {
-  final CacheConfig config;
-  final Map<String, _CacheEntry> _cache = {};
 
   ResultCache(this.config);
+  final CacheConfig config;
+  final Map<String, _CacheEntry> _cache = {};
 
   /// Generate cache key from query and options.
   String _generateKey(String category, String query, SearchOptions options) {
     final keyData = '$category:$query:${options.region.code}:'
-        '${options.safeSearch.code}:${options.timeLimit?.code}:'
+        '${options.safeSearch.code}:${options.timeLimit.code}:'
         '${options.page}:${options.backend}';
     return keyData.hashCode.toString();
   }
@@ -310,27 +305,27 @@ class ResultCache {
 }
 
 class _CacheEntry {
-  final List<Map<String, dynamic>> results;
-  final DateTime expiresAt;
-  final DateTime createdAt;
 
   _CacheEntry({
     required this.results,
     required this.expiresAt,
   }) : createdAt = DateTime.now();
+  final List<Map<String, dynamic>> results;
+  final DateTime expiresAt;
+  final DateTime createdAt;
 }
 
 /// Cache statistics.
 class CacheStats {
-  final int entries;
-  final int maxEntries;
-  final Duration ttl;
 
   const CacheStats({
     required this.entries,
     required this.maxEntries,
     required this.ttl,
   });
+  final int entries;
+  final int maxEntries;
+  final Duration ttl;
 
   double get utilizationPercent => entries / maxEntries * 100;
 

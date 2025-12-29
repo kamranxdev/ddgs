@@ -41,8 +41,7 @@ class WikipediaEngine extends BaseSearchEngine<TextResult> {
     String? timelimit,
     int page = 1,
     Map<String, dynamic>? extra,
-  }) {
-    return {
+  }) => {
       'action': 'query',
       'list': 'search',
       'srsearch': query,
@@ -50,7 +49,6 @@ class WikipediaEngine extends BaseSearchEngine<TextResult> {
       'srlimit': '10',
       'sroffset': ((page - 1) * 10).toString(),
     };
-  }
 
   @override
   List<TextResult> extractResults(String htmlText) {

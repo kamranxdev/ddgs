@@ -19,6 +19,17 @@ enum InstantAnswerType {
 
 /// Represents an instant answer (direct answer to a query).
 class InstantAnswer {
+
+  const InstantAnswer({
+    required this.answer,
+    required this.source,
+    this.sourceUrl,
+    this.type = InstantAnswerType.unknown,
+    this.abstract,
+    this.imageUrl,
+    this.relatedTopics = const [],
+    this.infobox,
+  });
   /// The answer text.
   final String answer;
 
@@ -43,17 +54,6 @@ class InstantAnswer {
   /// Infobox data (structured information).
   final Map<String, String>? infobox;
 
-  const InstantAnswer({
-    required this.answer,
-    required this.source,
-    this.sourceUrl,
-    this.type = InstantAnswerType.unknown,
-    this.abstract,
-    this.imageUrl,
-    this.relatedTopics = const [],
-    this.infobox,
-  });
-
   /// Check if this answer has meaningful content.
   bool get hasContent => answer.isNotEmpty || (abstract?.isNotEmpty ?? false);
 
@@ -72,15 +72,15 @@ class InstantAnswer {
 
 /// Related topic from instant answer.
 class RelatedTopic {
-  final String text;
-  final String url;
-  final String? icon;
 
   const RelatedTopic({
     required this.text,
     required this.url,
     this.icon,
   });
+  final String text;
+  final String url;
+  final String? icon;
 
   Map<String, dynamic> toJson() => {
         'text': text,
@@ -91,6 +91,12 @@ class RelatedTopic {
 
 /// Search suggestion/autocomplete result.
 class SearchSuggestion {
+
+  const SearchSuggestion({
+    required this.suggestion,
+    this.score = 0,
+    this.category,
+  });
   /// The suggested query.
   final String suggestion;
 
@@ -99,12 +105,6 @@ class SearchSuggestion {
 
   /// Category of suggestion (if available).
   final String? category;
-
-  const SearchSuggestion({
-    required this.suggestion,
-    this.score = 0,
-    this.category,
-  });
 
   Map<String, dynamic> toJson() => {
         'suggestion': suggestion,
@@ -115,7 +115,6 @@ class SearchSuggestion {
 
 /// Service for fetching instant answers and suggestions.
 class InstantAnswerService {
-  final HttpClient _httpClient;
 
   InstantAnswerService({
     String? proxy,
@@ -126,6 +125,7 @@ class InstantAnswerService {
           timeout: timeout,
           verify: verify,
         );
+  final HttpClient _httpClient;
 
   /// Get instant answer for a query using DuckDuckGo's API.
   Future<InstantAnswer?> getInstantAnswer(String query) async {
@@ -160,8 +160,8 @@ class InstantAnswerService {
     final imageUrl = data['Image'] as String?;
 
     // Determine answer type
-    InstantAnswerType type = InstantAnswerType.unknown;
-    String answerText = '';
+    var type = InstantAnswerType.unknown;
+    var answerText = '';
 
     if (answer.isNotEmpty) {
       answerText = answer;
@@ -215,11 +215,11 @@ class InstantAnswerService {
       sourceUrl: abstractUrl,
       type: type,
       abstract: abstractText.isNotEmpty ? abstractText : null,
-      imageUrl: imageUrl?.isNotEmpty == true
+      imageUrl: imageUrl?.isNotEmpty ?? false
           ? 'https://duckduckgo.com$imageUrl'
           : null,
       relatedTopics: relatedTopics,
-      infobox: infobox?.isNotEmpty == true ? infobox : null,
+      infobox: infobox?.isNotEmpty ?? false ? infobox : null,
     );
   }
 
@@ -261,13 +261,13 @@ class InstantAnswerService {
               suggestions.add(SearchSuggestion(
                 suggestion: phrase,
                 score: 100 - i * 10,
-              ));
+              ),);
             }
           } else if (item is String) {
             suggestions.add(SearchSuggestion(
               suggestion: item,
               score: 100 - i * 10,
-            ));
+            ),);
           }
         }
       }

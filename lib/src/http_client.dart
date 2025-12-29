@@ -7,23 +7,19 @@ import 'exceptions.dart';
 
 /// HTTP response wrapper.
 class HttpResponse {
-  final int statusCode;
-  final String body;
-  final List<int> bodyBytes;
 
   HttpResponse({
     required this.statusCode,
     required this.body,
     required this.bodyBytes,
   });
+  final int statusCode;
+  final String body;
+  final List<int> bodyBytes;
 }
 
 /// HTTP client with proxy support.
 class HttpClient {
-  final String? proxy;
-  final Duration timeout;
-  final bool verify;
-  late final http.Client _client;
 
   HttpClient({
     this.proxy,
@@ -32,6 +28,10 @@ class HttpClient {
   }) : timeout = timeout ?? const Duration(seconds: 10) {
     _client = http.Client();
   }
+  final String? proxy;
+  final Duration timeout;
+  final bool verify;
+  late final http.Client _client;
 
   /// Make an HTTP request.
   Future<HttpResponse> request(
@@ -47,7 +47,7 @@ class HttpClient {
         url = url.replace(queryParameters: {
           ...url.queryParameters,
           ...params,
-        });
+        },);
       }
 
       http.Response response;
@@ -92,18 +92,14 @@ class HttpClient {
     Uri url, {
     Map<String, String>? headers,
     Map<String, String>? params,
-  }) {
-    return request('GET', url, headers: headers, params: params);
-  }
+  }) => request('GET', url, headers: headers, params: params);
 
   /// Make a POST request.
   Future<HttpResponse> post(
     Uri url, {
     Map<String, String>? headers,
     dynamic body,
-  }) {
-    return request('POST', url, headers: headers, body: body);
-  }
+  }) => request('POST', url, headers: headers, body: body);
 
   void close() {
     _client.close();

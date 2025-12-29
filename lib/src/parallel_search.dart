@@ -21,6 +21,16 @@ enum MergeStrategy {
 
 /// Configuration for parallel search execution.
 class ParallelSearchConfig {
+
+  const ParallelSearchConfig({
+    this.maxConcurrency = 5,
+    this.failFast = false,
+    this.minResults = 5,
+    this.maxWaitTime = const Duration(seconds: 10),
+    this.mergeStrategy = MergeStrategy.interleave,
+    this.deduplicate = true,
+    this.engineTimeout = const Duration(seconds: 5),
+  });
   /// Maximum number of concurrent engine requests.
   final int maxConcurrency;
 
@@ -42,16 +52,6 @@ class ParallelSearchConfig {
   /// Timeout for individual engine requests.
   final Duration engineTimeout;
 
-  const ParallelSearchConfig({
-    this.maxConcurrency = 5,
-    this.failFast = false,
-    this.minResults = 5,
-    this.maxWaitTime = const Duration(seconds: 10),
-    this.mergeStrategy = MergeStrategy.interleave,
-    this.deduplicate = true,
-    this.engineTimeout = const Duration(seconds: 5),
-  });
-
   /// Fast configuration - returns quickly with fewer results.
   static const fast = ParallelSearchConfig(
     maxConcurrency: 3,
@@ -70,6 +70,13 @@ class ParallelSearchConfig {
 
 /// Result from a single engine in parallel search.
 class EngineResult<T extends SearchResult> {
+
+  const EngineResult({
+    required this.engine,
+    required this.results,
+    required this.duration,
+    this.error,
+  });
   /// The engine name.
   final String engine;
 
@@ -84,17 +91,16 @@ class EngineResult<T extends SearchResult> {
 
   /// Whether this engine succeeded.
   bool get success => error == null;
-
-  const EngineResult({
-    required this.engine,
-    required this.results,
-    required this.duration,
-    this.error,
-  });
 }
 
 /// Aggregated results from parallel search.
 class ParallelSearchResult<T extends SearchResult> {
+
+  const ParallelSearchResult({
+    required this.results,
+    required this.engineResults,
+    required this.totalDuration,
+  });
   /// Combined results from all engines.
   final List<T> results;
 
@@ -123,12 +129,6 @@ class ParallelSearchResult<T extends SearchResult> {
     return Duration(milliseconds: total ~/ successful.length);
   }
 
-  const ParallelSearchResult({
-    required this.results,
-    required this.engineResults,
-    required this.totalDuration,
-  });
-
   Map<String, dynamic> toJson() => {
         'totalResults': results.length,
         'successfulEngines': successfulEngines,
@@ -141,21 +141,21 @@ class ParallelSearchResult<T extends SearchResult> {
                   'resultCount': e.results.length,
                   'duration': e.duration.inMilliseconds,
                   'error': e.error,
-                })
+                },)
             .toList(),
       };
 }
 
 /// Utility for merging and deduplicating results.
 class ResultMerger<T extends SearchResult> {
-  final MergeStrategy strategy;
-  final bool deduplicate;
-  final Set<String> _seenUrls = {};
 
   ResultMerger({
     this.strategy = MergeStrategy.interleave,
     this.deduplicate = true,
   });
+  final MergeStrategy strategy;
+  final bool deduplicate;
+  final Set<String> _seenUrls = {};
 
   /// Merge results from multiple engines.
   List<T> merge(List<EngineResult<T>> engineResults) {
@@ -259,11 +259,11 @@ class ResultMerger<T extends SearchResult> {
 
 /// Manages concurrent search execution with proper resource handling.
 class ConcurrentSearchManager {
+
+  ConcurrentSearchManager({this.maxConcurrency = 5});
   final int maxConcurrency;
   int _activeRequests = 0;
   final _queue = <Completer<void>>[];
-
-  ConcurrentSearchManager({this.maxConcurrency = 5});
 
   /// Acquire a slot for making a request.
   Future<void> acquire() async {

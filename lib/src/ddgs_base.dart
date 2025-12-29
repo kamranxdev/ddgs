@@ -26,32 +26,29 @@ import 'utils.dart';
 /// ddgs.close();
 /// ```
 class DDGS {
-  final String? _proxy;
-  final Duration _timeout;
-  final bool _verify;
-  final Map<Type, BaseSearchEngine> _enginesCache = {};
-  final ResultCache? _cache;
-  final RateLimiter _rateLimiter;
-  final RetryConfig _retryConfig;
-  InstantAnswerService? _instantAnswerService;
-
-  /// Number of threads/isolates to use for search.
-  int? threads;
 
   DDGS({
     String? proxy,
     Duration? timeout,
     bool verify = true,
     CacheConfig cacheConfig = CacheConfig.disabled,
-    RetryConfig retryConfig = const RetryConfig(),
     int maxRequestsPerSecond = 10,
   })  : _proxy =
             expandProxyTbAlias(proxy) ?? Platform.environment['DDGS_PROXY'],
         _timeout = timeout ?? const Duration(seconds: 5),
         _verify = verify,
         _cache = cacheConfig.enabled ? ResultCache(cacheConfig) : null,
-        _retryConfig = retryConfig,
         _rateLimiter = RateLimiter(maxRequestsPerSecond: maxRequestsPerSecond);
+  final String? _proxy;
+  final Duration _timeout;
+  final bool _verify;
+  final Map<Type, BaseSearchEngine> _enginesCache = {};
+  final ResultCache? _cache;
+  final RateLimiter _rateLimiter;
+  InstantAnswerService? _instantAnswerService;
+
+  /// Number of threads/isolates to use for search.
+  int? threads;
 
   /// Get the instant answer service (lazy initialization).
   InstantAnswerService get instantAnswerService {
@@ -66,7 +63,7 @@ class DDGS {
   /// Get search engine instances for a category and backend.
   List<BaseSearchEngine> _getEngines(String category, String backend) {
     final backendList = backend.split(',').map((e) => e.trim()).toList();
-    var engineKeys = engines[category]?.keys.toList() ?? [];
+    final engineKeys = engines[category]?.keys.toList() ?? [];
     engineKeys.shuffle();
 
     List<String> keys;
@@ -176,14 +173,14 @@ class DDGS {
       workersStarted++;
 
       if (workersStarted >= maxWorkers) {
-        await Future.wait(futures, eagerError: false);
+        await Future.wait(futures);
         futures.clear();
       }
     }
 
     // Wait for remaining futures
     if (futures.isNotEmpty) {
-      await Future.wait(futures, eagerError: false);
+      await Future.wait(futures);
     }
 
     // Convert results to JSON
@@ -245,8 +242,7 @@ class DDGS {
     int? maxResults = 10,
     int page = 1,
     String backend = 'auto',
-  }) {
-    return _search(
+  }) => _search(
       category: 'text',
       query: query,
       region: region,
@@ -256,7 +252,6 @@ class DDGS {
       page: page,
       backend: backend,
     );
-  }
 
   /// Image search.
   Future<List<Map<String, dynamic>>> images(
@@ -267,8 +262,7 @@ class DDGS {
     int? maxResults = 10,
     int page = 1,
     String backend = 'auto',
-  }) {
-    return _search(
+  }) => _search(
       category: 'images',
       query: query,
       region: region,
@@ -278,7 +272,6 @@ class DDGS {
       page: page,
       backend: backend,
     );
-  }
 
   /// Video search.
   Future<List<Map<String, dynamic>>> videos(
@@ -289,8 +282,7 @@ class DDGS {
     int? maxResults = 10,
     int page = 1,
     String backend = 'auto',
-  }) {
-    return _search(
+  }) => _search(
       category: 'videos',
       query: query,
       region: region,
@@ -300,7 +292,6 @@ class DDGS {
       page: page,
       backend: backend,
     );
-  }
 
   /// News search.
   Future<List<Map<String, dynamic>>> news(
@@ -311,8 +302,7 @@ class DDGS {
     int? maxResults = 10,
     int page = 1,
     String backend = 'auto',
-  }) {
-    return _search(
+  }) => _search(
       category: 'news',
       query: query,
       region: region,
@@ -322,7 +312,6 @@ class DDGS {
       page: page,
       backend: backend,
     );
-  }
 
   /// Books search.
   Future<List<Map<String, dynamic>>> books(
@@ -332,8 +321,7 @@ class DDGS {
     int? maxResults = 10,
     int page = 1,
     String backend = 'auto',
-  }) {
-    return _search(
+  }) => _search(
       category: 'books',
       query: query,
       region: region,
@@ -342,7 +330,6 @@ class DDGS {
       page: page,
       backend: backend,
     );
-  }
 
   // ============================================
   // TYPED SEARCH METHODS (Strongly-Typed Results)
@@ -364,7 +351,7 @@ class DDGS {
       page: options.page,
       backend: options.backend,
     );
-    return results.map((r) => TextSearchResult.fromJson(r)).toList();
+    return results.map(TextSearchResult.fromJson).toList();
   }
 
   /// Image search with strongly-typed results.
@@ -381,7 +368,7 @@ class DDGS {
       page: options.page,
       backend: options.backend,
     );
-    return results.map((r) => ImageSearchResult.fromJson(r)).toList();
+    return results.map(ImageSearchResult.fromJson).toList();
   }
 
   /// Video search with strongly-typed results.
@@ -398,7 +385,7 @@ class DDGS {
       page: options.page,
       backend: options.backend,
     );
-    return results.map((r) => VideoSearchResult.fromJson(r)).toList();
+    return results.map(VideoSearchResult.fromJson).toList();
   }
 
   /// News search with strongly-typed results.
@@ -415,7 +402,7 @@ class DDGS {
       page: options.page,
       backend: options.backend,
     );
-    return results.map((r) => NewsSearchResult.fromJson(r)).toList();
+    return results.map(NewsSearchResult.fromJson).toList();
   }
 
   // ============================================
@@ -426,19 +413,13 @@ class DDGS {
   ///
   /// Returns structured information like definitions, calculations,
   /// Wikipedia summaries, etc.
-  Future<InstantAnswer?> instantAnswer(String query) {
-    return instantAnswerService.getInstantAnswer(query);
-  }
+  Future<InstantAnswer?> instantAnswer(String query) => instantAnswerService.getInstantAnswer(query);
 
   /// Get search suggestions/autocomplete for a query.
-  Future<List<SearchSuggestion>> suggestions(String query) {
-    return instantAnswerService.getSuggestions(query);
-  }
+  Future<List<SearchSuggestion>> suggestions(String query) => instantAnswerService.getSuggestions(query);
 
   /// Get spelling correction suggestion for a query.
-  Future<String?> spellingCorrection(String query) {
-    return instantAnswerService.getSpellingCorrection(query);
-  }
+  Future<String?> spellingCorrection(String query) => instantAnswerService.getSpellingCorrection(query);
 
   // ============================================
   // ADVANCED SEARCH FEATURES
@@ -482,16 +463,14 @@ class DDGS {
     final results = <String, List<Map<String, dynamic>>>{};
     final manager = ConcurrentSearchManager(maxConcurrency: maxConcurrency);
 
-    final futures = queries.map((query) async {
-      return manager.run(() async {
+    final futures = queries.map((query) async => manager.run(() async {
         final queryResults = await searchWithOptions(
           query,
           category: category,
           options: options,
         );
         return MapEntry(query, queryResults);
-      });
-    });
+      }),);
 
     final entries = await Future.wait(futures);
     for (final entry in entries) {
@@ -502,9 +481,7 @@ class DDGS {
   }
 
   /// Get all available search engines for a category.
-  List<String> getAvailableEnginesFor(String category) {
-    return engines[category]?.keys.toList() ?? [];
-  }
+  List<String> getAvailableEnginesFor(String category) => engines[category]?.keys.toList() ?? [];
 
   /// Get cache statistics (if caching is enabled).
   CacheStats? get cacheStats => _cache?.stats;

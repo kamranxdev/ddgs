@@ -34,19 +34,17 @@
 /// ```
 library ddgs;
 
+export 'src/base_search_engine.dart';
 // Core exports
 export 'src/ddgs_base.dart';
-export 'src/exceptions.dart';
-export 'src/results.dart';
-export 'src/base_search_engine.dart';
-
-// Enhanced API exports
-export 'src/search_result.dart';
-export 'src/search_options.dart';
-export 'src/streaming.dart';
-export 'src/instant_answers.dart';
-export 'src/parallel_search.dart';
-
 // Engine registry
 export 'src/engines/engines.dart' show getAvailableEngines, supportedCategories, isEngineAvailable;
+export 'src/exceptions.dart';
+export 'src/instant_answers.dart';
+export 'src/parallel_search.dart';
+export 'src/results.dart';
+export 'src/search_options.dart';
+// Enhanced API exports
+export 'src/search_result.dart';
+export 'src/streaming.dart';
 

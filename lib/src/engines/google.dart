@@ -104,14 +104,12 @@ class GoogleEngine extends BaseSearchEngine<TextResult> {
 
     for (final item in items) {
       // Extract title
-      var titleElement = item.querySelector('h3');
+      final titleElement = item.querySelector('h3');
       final title = titleElement?.text ?? '';
 
       // Extract URL
       var linkElement = item.querySelector('a[href^="http"]');
-      if (linkElement == null) {
-        linkElement = item.querySelector('a[data-ved]');
-      }
+      linkElement ??= item.querySelector('a[data-ved]');
       var href = linkElement?.attributes['href'] ?? '';
       
       // Clean Google redirect URLs
@@ -197,7 +195,7 @@ class GoogleImagesEngine extends BaseSearchEngine<ImagesResult> {
           url: imageUrl,
           title: 'Google Image',
           source: 'google',
-        ));
+        ),);
       }
     }
 

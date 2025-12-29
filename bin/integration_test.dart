@@ -88,7 +88,7 @@ void main() async {
     print('-' * 60);
     await testErrorHandling(ddgs);
 
-    print('\n' + '=' * 60);
+    print('\n${'=' * 60}');
     print('✨ All integration tests completed successfully!');
   } catch (e) {
     print('\n❌ Error during tests: $e');
@@ -102,13 +102,13 @@ Future<void> testBasicTextSearch(DDGS ddgs) async {
   final results = await ddgs.text('Dart programming language', maxResults: 3);
   
   print('Found ${results.length} results:\n');
-  for (int i = 0; i < results.length && i < 3; i++) {
+  for (var i = 0; i < results.length && i < 3; i++) {
     final result = results[i];
     print('  ${i + 1}. ${result['title']}');
     print('     URL: ${result['href']}');
     final body = result['body'] as String;
     final summary = body.length > 80 ? body.substring(0, 80) : body;
-    print('     Summary: ${summary}...\n');
+    print('     Summary: $summary...\n');
   }
 }
 
@@ -147,13 +147,13 @@ Future<void> testTypedSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} typed results:\n');
-  for (int i = 0; i < results.length; i++) {
+  for (var i = 0; i < results.length; i++) {
     final result = results[i];
     print('  ${i + 1}. Title: ${result.title}');
     print('     Type: ${result.runtimeType}');
     print('     URL: ${result.href}');
     final bodyPreview = result.body.length > 60 ? result.body.substring(0, 60) : result.body;
-    print('     Body: ${bodyPreview}...\n');
+    print('     Body: $bodyPreview...\n');
   }
 }
 
@@ -166,7 +166,7 @@ Future<void> testImageSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} image results:\n');
-  for (int i = 0; i < results.length && i < 3; i++) {
+  for (var i = 0; i < results.length && i < 3; i++) {
     final result = results[i];
     print('  ${i + 1}. Title: ${result.title}');
     print('     Image URL: ${result.imageUrl}');
@@ -187,7 +187,7 @@ Future<void> testVideoSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} video results:\n');
-  for (int i = 0; i < results.length && i < 2; i++) {
+  for (var i = 0; i < results.length && i < 2; i++) {
     final result = results[i];
     print('  ${i + 1}. Title: ${result.title}');
     print('     Publisher: ${result.publisher ?? 'Unknown'}');
@@ -205,7 +205,7 @@ Future<void> testNewsSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} news results:\n');
-  for (int i = 0; i < results.length && i < 2; i++) {
+  for (var i = 0; i < results.length && i < 2; i++) {
     final result = results[i];
     print('  ${i + 1}. Title: ${result.title}');
     print('     Source: ${result.source ?? 'Unknown'}');
@@ -228,7 +228,7 @@ Future<void> testTimeLimitedSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} results from the last 24 hours:\n');
-  for (int i = 0; i < results.length && i < 2; i++) {
+  for (var i = 0; i < results.length && i < 2; i++) {
     final result = results[i];
     print('  ${i + 1}. ${result['title']}');
     print('     URL: ${result['href']}\n');
@@ -264,7 +264,7 @@ Future<void> testSafeSearch(DDGS ddgs) async {
 Future<void> testPagination(DDGS ddgs) async {
   print('Testing pagination:\n');
   
-  for (int page = 1; page <= 3; page++) {
+  for (var page = 1; page <= 3; page++) {
     print('Page $page:');
     try {
       final results = await ddgs.text(
@@ -274,7 +274,7 @@ Future<void> testPagination(DDGS ddgs) async {
       );
       
       if (results.isNotEmpty) {
-        for (int i = 0; i < results.length && i < 2; i++) {
+        for (var i = 0; i < results.length && i < 2; i++) {
           print('  ${i + 1}. ${results[i]['title']}');
         }
       }
@@ -316,7 +316,7 @@ Future<void> testSuggestions(DDGS ddgs) async {
     final suggestions = await ddgs.suggestions('dart');
     
     print('Found ${suggestions.length} suggestions:\n');
-    for (int i = 0; i < suggestions.length && i < 5; i++) {
+    for (var i = 0; i < suggestions.length && i < 5; i++) {
       final suggestion = suggestions[i];
       print('  ${i + 1}. ${suggestion.suggestion}');
       if (suggestion.category != null) {
@@ -357,7 +357,6 @@ Future<void> testBatchSearch(DDGS ddgs) async {
   try {
     final results = await ddgs.batchSearch(
       queries,
-      category: 'text',
       options: const SearchOptions(maxResults: 1),
     );
 
@@ -391,7 +390,7 @@ Future<void> testCache(DDGS ddgs) async {
       category: 'text',
       options: options,
     );
-    var duration1 = DateTime.now().difference(start);
+    final duration1 = DateTime.now().difference(start);
     print('   Found ${results1.length} results in ${duration1.inMilliseconds}ms');
 
     // Second search - should be from cache
@@ -402,7 +401,7 @@ Future<void> testCache(DDGS ddgs) async {
       category: 'text',
       options: options,
     );
-    var duration2 = DateTime.now().difference(start);
+    final duration2 = DateTime.now().difference(start);
     print('   Found ${results2.length} results in ${duration2.inMilliseconds}ms');
 
     if (duration2.inMilliseconds < duration1.inMilliseconds) {
@@ -453,7 +452,7 @@ Future<void> testErrorHandling(DDGS ddgs) async {
   // Test 3: Invalid category graceful fallback
   print('Test 3: Search with auto backend (should work)');
   try {
-    final results = await ddgs.text('test', backend: 'auto', maxResults: 1);
+    final results = await ddgs.text('test', maxResults: 1);
     if (results.isNotEmpty) {
       print('  ✓ Auto backend found results: ${results.first['title']}\n');
     }

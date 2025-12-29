@@ -64,11 +64,11 @@ Future<void> typedTextSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} results:\n');
-  for (var result in results) {
+  for (final result in results) {
     print('• ${result.title}');
     print('  URL: ${result.href}');
     final preview = result.body.length > 80 ? result.body.substring(0, 80) : result.body;
-    print('  Summary: ${preview}...');
+    print('  Summary: $preview...');
     print('');
   }
 }
@@ -82,7 +82,7 @@ Future<void> imageSearch(DDGS ddgs) async {
   );
 
   print('Found ${results.length} images:\n');
-  for (var result in results) {
+  for (final result in results) {
     print('• ${result.title}');
     print('  Image: ${result.imageUrl}');
     if (result.width != null && result.height != null) {
@@ -103,7 +103,7 @@ Future<void> searchWithOptions(DDGS ddgs) async {
   );
 
   print('Found ${results.length} results:\n');
-  for (var result in results) {
+  for (final result in results) {
     print('• ${result['title']}');
     print('');
   }

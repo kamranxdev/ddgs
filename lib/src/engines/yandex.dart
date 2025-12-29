@@ -1,4 +1,5 @@
 /// Yandex search engine implementation.
+library;
 
 import 'dart:math';
 import '../base_search_engine.dart';

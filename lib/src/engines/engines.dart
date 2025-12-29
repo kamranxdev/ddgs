@@ -1,4 +1,5 @@
 /// Engine registry.
+library;
 
 import '../base_search_engine.dart';
 import 'bing.dart';
@@ -7,7 +8,11 @@ import 'duckduckgo.dart';
 import 'duckduckgo_images.dart';
 import 'duckduckgo_news.dart';
 import 'duckduckgo_videos.dart';
+import 'ecosia.dart';
+import 'google.dart';
 import 'mojeek.dart';
+import 'qwant.dart';
+import 'startpage.dart';
 import 'wikipedia.dart';
 import 'yahoo.dart';
 import 'yandex.dart';
@@ -28,8 +33,16 @@ final Map<
         BraveEngine(proxy: proxy, timeout: timeout, verify: verify),
     'duckduckgo': ({proxy, timeout, verify = true}) =>
         DuckDuckGoEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'ecosia': ({proxy, timeout, verify = true}) =>
+        EcosiaEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'google': ({proxy, timeout, verify = true}) =>
+        GoogleEngine(proxy: proxy, timeout: timeout, verify: verify),
     'mojeek': ({proxy, timeout, verify = true}) =>
         MojeekEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'qwant': ({proxy, timeout, verify = true}) =>
+        QwantEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'startpage': ({proxy, timeout, verify = true}) =>
+        StartPageEngine(proxy: proxy, timeout: timeout, verify: verify),
     'wikipedia': ({proxy, timeout, verify = true}) =>
         WikipediaEngine(proxy: proxy, timeout: timeout, verify: verify),
     'yahoo': ({proxy, timeout, verify = true}) =>
@@ -40,6 +53,10 @@ final Map<
   'images': {
     'duckduckgo': ({proxy, timeout, verify = true}) =>
         DuckDuckGoImagesEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'google': ({proxy, timeout, verify = true}) =>
+        GoogleImagesEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'qwant': ({proxy, timeout, verify = true}) =>
+        QwantImagesEngine(proxy: proxy, timeout: timeout, verify: verify),
   },
   'videos': {
     'duckduckgo': ({proxy, timeout, verify = true}) =>
@@ -48,6 +65,21 @@ final Map<
   'news': {
     'duckduckgo': ({proxy, timeout, verify = true}) =>
         DuckDuckGoNewsEngine(proxy: proxy, timeout: timeout, verify: verify),
+    'qwant': ({proxy, timeout, verify = true}) =>
+        QwantNewsEngine(proxy: proxy, timeout: timeout, verify: verify),
   },
   'books': {},
 };
+
+/// Get list of all available engines for a category.
+List<String> getAvailableEngines(String category) {
+  return engines[category]?.keys.toList() ?? [];
+}
+
+/// Get all supported categories.
+List<String> get supportedCategories => engines.keys.toList();
+
+/// Check if an engine is available for a category.
+bool isEngineAvailable(String category, String engine) {
+  return engines[category]?.containsKey(engine) ?? false;
+}

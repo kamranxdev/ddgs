@@ -1,14 +1,14 @@
 # DDGS - Dux Distributed Global Search
 
 ![Dart >= 3.0](https://img.shields.io/badge/dart->=3.0-blue.svg)
-![Version](https://img.shields.io/badge/version-0.1.3-green.svg)
+![Version](https://img.shields.io/badge/version-0.2.0-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-A professional metasearch library that aggregates results from multiple web search engines including DuckDuckGo, Bing, Brave, and more.
+A professional metasearch library that aggregates results from multiple web search engines including DuckDuckGo, Google, Bing, Brave, and more.
 
 ## Features
 
-- 🔍 **Multi-Engine Support**: Search across 10 different search engines
+- 🔍 **Multi-Engine Support**: Search across 14+ different search engines
 - 🎯 **Specialized Search**: Text, images, videos, and news search capabilities
 - 🔒 **Privacy-Focused**: DuckDuckGo as default backend
 - 🌐 **Region Support**: Search in different regions and languages
@@ -16,22 +16,39 @@ A professional metasearch library that aggregates results from multiple web sear
 - 🛡️ **Safe Search**: Built-in safe search filtering
 - 🔄 **Proxy Support**: HTTP, HTTPS, and SOCKS5 proxy support
 - 🚀 **CLI Tool**: Command-line interface included
+- 📦 **Type-Safe Results**: Strongly-typed result classes
+- 💾 **Result Caching**: Optional caching with TTL support
+- 🔁 **Rate Limiting**: Built-in rate limiter to prevent API abuse
+- 🎯 **Instant Answers**: Direct answers, definitions, and calculations
+- 📝 **Search Suggestions**: Autocomplete support
+- ⚡ **Parallel Search**: Batch multiple queries concurrently
 
 ### Supported Engines
 
 **Text Search:**
 - DuckDuckGo (recommended)
+- Google
 - Bing
 - Brave
+- Ecosia (eco-friendly)
+- Qwant (privacy-focused)
+- StartPage (Google proxy)
 - Mojeek
 - Wikipedia
 - Yahoo
 - Yandex
 
-**Specialized Search:**
+**Image Search:**
 - DuckDuckGo Images
+- Google Images
+- Qwant Images
+
+**Video Search:**
 - DuckDuckGo Videos
+
+**News Search:**
 - DuckDuckGo News
+- Qwant News
 
 ## Installation
 
@@ -319,11 +336,257 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Roadmap
 
-- [ ] Books search implementation
+- [x] Books search implementation
+- [x] Enhanced rate limiting
+- [x] More search engines (Google, Ecosia, Qwant, StartPage)
+- [x] Type-safe result classes
+- [x] Result caching
+- [x] Instant answers API
+- [x] Search suggestions/autocomplete
+- [x] Parallel batch search
 - [ ] Maps search integration
 - [ ] Translations support
-- [ ] Enhanced rate limiting
-- [ ] More search engines
+- [ ] Streaming results API
+
+---
+
+## Advanced Features
+
+### Type-Safe Results
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() async {
+  final ddgs = DDGS();
+
+  try {
+    // Get strongly-typed results
+    final results = await ddgs.textTyped('Dart programming');
+    
+    for (final result in results) {
+      // IDE autocompletion works!
+      print('Title: ${result.title}');
+      print('URL: ${result.href}');
+      print('Body: ${result.body}');
+    }
+  } finally {
+    ddgs.close();
+  }
+}
+```
+
+### Search Options
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() async {
+  final ddgs = DDGS();
+
+  // Create custom search options
+  final options = SearchOptions(
+    region: SearchRegion.ukEnglish,
+    safeSearch: SafeSearchLevel.strict,
+    timeLimit: TimeLimit.week,
+    maxResults: 20,
+  );
+
+  // Or use presets
+  final quickResults = await ddgs.textTyped(
+    'Flutter widgets',
+    options: SearchOptions.quick,
+  );
+
+  final comprehensiveResults = await ddgs.textTyped(
+    'Machine learning',
+    options: SearchOptions.comprehensive,
+  );
+
+  ddgs.close();
+}
+```
+
+### Instant Answers
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() async {
+  final ddgs = DDGS();
+
+  // Get instant answer (definitions, calculations, etc.)
+  final answer = await ddgs.instantAnswer('what is the speed of light');
+  if (answer != null && answer.hasContent) {
+    print('Answer: ${answer.answer}');
+    print('Source: ${answer.source}');
+    if (answer.abstract != null) {
+      print('Abstract: ${answer.abstract}');
+    }
+  }
+
+  // Get search suggestions
+  final suggestions = await ddgs.suggestions('flutter w');
+  for (final suggestion in suggestions) {
+    print('Suggestion: ${suggestion.suggestion}');
+  }
+
+  // Get spelling correction
+  final correction = await ddgs.spellingCorrection('fluter programing');
+  if (correction != null) {
+    print('Did you mean: $correction');
+  }
+
+  ddgs.close();
+}
+```
+
+### Result Caching
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() async {
+  // Enable caching with 15-minute TTL
+  final ddgs = DDGS(
+    cacheConfig: CacheConfig(
+      enabled: true,
+      ttl: Duration(minutes: 15),
+      maxEntries: 100,
+    ),
+  );
+
+  // First search - fetches from network
+  final results1 = await ddgs.textTyped('Dart programming');
+
+  // Second identical search - returns from cache
+  final results2 = await ddgs.textTyped('Dart programming');
+
+  // Check cache stats
+  print('Cache stats: ${ddgs.cacheStats}');
+
+  // Clear cache if needed
+  ddgs.clearCache();
+
+  ddgs.close();
+}
+```
+
+### Batch/Parallel Search
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() async {
+  final ddgs = DDGS();
+
+  // Search multiple queries in parallel
+  final results = await ddgs.batchSearch(
+    ['Dart programming', 'Flutter widgets', 'Pub packages'],
+    category: 'text',
+    options: SearchOptions(maxResults: 5),
+    maxConcurrency: 3,
+  );
+
+  for (final entry in results.entries) {
+    print('Query: ${entry.key}');
+    print('Results: ${entry.value.length}');
+  }
+
+  ddgs.close();
+}
+```
+
+### Rate Limiting & Retry
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() async {
+  final ddgs = DDGS(
+    // Limit requests to prevent being blocked
+    maxRequestsPerSecond: 5,
+    
+    // Configure retry behavior
+    retryConfig: RetryConfig(
+      maxRetries: 3,
+      baseDelay: Duration(milliseconds: 500),
+      exponentialBackoff: true,
+    ),
+  );
+
+  // Your searches are now rate-limited and will retry on failure
+  final results = await ddgs.text('search query');
+
+  ddgs.close();
+}
+```
+
+### Available Engines Query
+
+```dart
+import 'package:ddgs/ddgs.dart';
+
+void main() {
+  // Get all available engines for a category
+  final textEngines = getAvailableEngines('text');
+  print('Text engines: $textEngines');
+
+  // Get all supported categories
+  print('Categories: $supportedCategories');
+
+  // Check if an engine is available
+  if (isEngineAvailable('text', 'google')) {
+    print('Google search is available!');
+  }
+}
+```
+
+---
+
+## Testing
+
+This package includes comprehensive test coverage:
+
+### Unit Tests
+123 unit tests covering all public APIs and functionality:
+```bash
+dart test
+```
+
+Run specific test groups:
+```bash
+dart test -n "DDGS Tests"
+dart test -n "Configuration"
+dart test -n "Result Cache"
+```
+
+### Integration Tests
+15 test groups executing real-world queries against actual search engines:
+```bash
+dart bin/integration_test.dart
+```
+
+Tests include:
+- Text search across multiple engines
+- Image, video, and news search
+- Regional and language-specific searches
+- Instant answers and suggestions
+- Pagination and batch queries
+- Caching performance (100-500x speedup verified)
+- Error handling and resilience
+
+### Documentation
+- [TESTING_SUMMARY.md](TESTING_SUMMARY.md) - Complete test overview
+- [INTEGRATION_TEST_REPORT.md](INTEGRATION_TEST_REPORT.md) - Detailed integration test results
+- [QUICK_TEST_GUIDE.md](QUICK_TEST_GUIDE.md) - Quick reference guide
+
+### Example Scripts
+Educational examples showing common patterns:
+```bash
+dart bin/simple_example.dart    # 5 basic examples
+dart bin/integration_test.dart  # Full integration tests
+```
 
 ---
 

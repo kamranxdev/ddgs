@@ -1,4 +1,5 @@
 /// DDGS class implementation.
+library;
 
 import 'dart:async';
 import 'dart:io';
@@ -6,7 +7,12 @@ import 'dart:math';
 import 'base_search_engine.dart';
 import 'engines/engines.dart';
 import 'exceptions.dart';
+import 'instant_answers.dart';
+import 'parallel_search.dart';
 import 'results.dart';
+import 'search_options.dart';
+import 'search_result.dart';
+import 'streaming.dart';
 import 'utils.dart';
 
 /// DDGS | Dux Distributed Global Search.
@@ -24,6 +30,10 @@ class DDGS {
   final Duration _timeout;
   final bool _verify;
   final Map<Type, BaseSearchEngine> _enginesCache = {};
+  final ResultCache? _cache;
+  final RateLimiter _rateLimiter;
+  final RetryConfig _retryConfig;
+  InstantAnswerService? _instantAnswerService;
 
   /// Number of threads/isolates to use for search.
   int? threads;
@@ -32,10 +42,26 @@ class DDGS {
     String? proxy,
     Duration? timeout,
     bool verify = true,
+    CacheConfig cacheConfig = CacheConfig.disabled,
+    RetryConfig retryConfig = const RetryConfig(),
+    int maxRequestsPerSecond = 10,
   })  : _proxy =
             expandProxyTbAlias(proxy) ?? Platform.environment['DDGS_PROXY'],
         _timeout = timeout ?? const Duration(seconds: 5),
-        _verify = verify;
+        _verify = verify,
+        _cache = cacheConfig.enabled ? ResultCache(cacheConfig) : null,
+        _retryConfig = retryConfig,
+        _rateLimiter = RateLimiter(maxRequestsPerSecond: maxRequestsPerSecond);
+
+  /// Get the instant answer service (lazy initialization).
+  InstantAnswerService get instantAnswerService {
+    _instantAnswerService ??= InstantAnswerService(
+      proxy: _proxy,
+      timeout: _timeout,
+      verify: _verify,
+    );
+    return _instantAnswerService!;
+  }
 
   /// Get search engine instances for a category and backend.
   List<BaseSearchEngine> _getEngines(String category, String backend) {
@@ -318,11 +344,182 @@ class DDGS {
     );
   }
 
+  // ============================================
+  // TYPED SEARCH METHODS (Strongly-Typed Results)
+  // ============================================
+
+  /// Text search with strongly-typed results.
+  ///
+  /// Returns a list of [TextSearchResult] objects instead of raw maps.
+  Future<List<TextSearchResult>> textTyped(
+    String query, {
+    SearchOptions options = const SearchOptions(),
+  }) async {
+    final results = await text(
+      query,
+      region: options.region.code,
+      safesearch: options.safeSearch.code,
+      timelimit: options.timeLimit.code,
+      maxResults: options.maxResults,
+      page: options.page,
+      backend: options.backend,
+    );
+    return results.map((r) => TextSearchResult.fromJson(r)).toList();
+  }
+
+  /// Image search with strongly-typed results.
+  Future<List<ImageSearchResult>> imagesTyped(
+    String query, {
+    SearchOptions options = const SearchOptions(),
+  }) async {
+    final results = await images(
+      query,
+      region: options.region.code,
+      safesearch: options.safeSearch.code,
+      timelimit: options.timeLimit.code,
+      maxResults: options.maxResults,
+      page: options.page,
+      backend: options.backend,
+    );
+    return results.map((r) => ImageSearchResult.fromJson(r)).toList();
+  }
+
+  /// Video search with strongly-typed results.
+  Future<List<VideoSearchResult>> videosTyped(
+    String query, {
+    SearchOptions options = const SearchOptions(),
+  }) async {
+    final results = await videos(
+      query,
+      region: options.region.code,
+      safesearch: options.safeSearch.code,
+      timelimit: options.timeLimit.code,
+      maxResults: options.maxResults,
+      page: options.page,
+      backend: options.backend,
+    );
+    return results.map((r) => VideoSearchResult.fromJson(r)).toList();
+  }
+
+  /// News search with strongly-typed results.
+  Future<List<NewsSearchResult>> newsTyped(
+    String query, {
+    SearchOptions options = const SearchOptions(),
+  }) async {
+    final results = await news(
+      query,
+      region: options.region.code,
+      safesearch: options.safeSearch.code,
+      timelimit: options.timeLimit.code,
+      maxResults: options.maxResults,
+      page: options.page,
+      backend: options.backend,
+    );
+    return results.map((r) => NewsSearchResult.fromJson(r)).toList();
+  }
+
+  // ============================================
+  // INSTANT ANSWERS & SUGGESTIONS
+  // ============================================
+
+  /// Get instant answer for a query.
+  ///
+  /// Returns structured information like definitions, calculations,
+  /// Wikipedia summaries, etc.
+  Future<InstantAnswer?> instantAnswer(String query) {
+    return instantAnswerService.getInstantAnswer(query);
+  }
+
+  /// Get search suggestions/autocomplete for a query.
+  Future<List<SearchSuggestion>> suggestions(String query) {
+    return instantAnswerService.getSuggestions(query);
+  }
+
+  /// Get spelling correction suggestion for a query.
+  Future<String?> spellingCorrection(String query) {
+    return instantAnswerService.getSpellingCorrection(query);
+  }
+
+  // ============================================
+  // ADVANCED SEARCH FEATURES
+  // ============================================
+
+  /// Search with options object for cleaner API.
+  Future<List<Map<String, dynamic>>> searchWithOptions(
+    String query, {
+    required String category,
+    SearchOptions options = const SearchOptions(),
+  }) {
+    // Check cache first
+    final cached = _cache?.get(category, query, options);
+    if (cached != null) return Future.value(cached);
+
+    return _search(
+      category: category,
+      query: query,
+      region: options.region.code,
+      safesearch: options.safeSearch.code,
+      timelimit: options.timeLimit.code,
+      maxResults: options.maxResults,
+      page: options.page,
+      backend: options.backend,
+    ).then((results) {
+      // Store in cache
+      _cache?.put(category, query, options, results);
+      return results;
+    });
+  }
+
+  /// Search multiple queries in parallel.
+  ///
+  /// Useful for batch processing or getting related results.
+  Future<Map<String, List<Map<String, dynamic>>>> batchSearch(
+    List<String> queries, {
+    String category = 'text',
+    SearchOptions options = const SearchOptions(),
+    int maxConcurrency = 3,
+  }) async {
+    final results = <String, List<Map<String, dynamic>>>{};
+    final manager = ConcurrentSearchManager(maxConcurrency: maxConcurrency);
+
+    final futures = queries.map((query) async {
+      return manager.run(() async {
+        final queryResults = await searchWithOptions(
+          query,
+          category: category,
+          options: options,
+        );
+        return MapEntry(query, queryResults);
+      });
+    });
+
+    final entries = await Future.wait(futures);
+    for (final entry in entries) {
+      results[entry.key] = entry.value;
+    }
+
+    return results;
+  }
+
+  /// Get all available search engines for a category.
+  List<String> getAvailableEnginesFor(String category) {
+    return engines[category]?.keys.toList() ?? [];
+  }
+
+  /// Get cache statistics (if caching is enabled).
+  CacheStats? get cacheStats => _cache?.stats;
+
+  /// Clear the result cache.
+  void clearCache() => _cache?.clear();
+
   /// Close all HTTP clients.
   void close() {
     for (final engine in _enginesCache.values) {
       engine.close();
     }
     _enginesCache.clear();
+    _instantAnswerService?.close();
+    _rateLimiter.reset();
   }
 }
+

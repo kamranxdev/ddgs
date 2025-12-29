@@ -1,4 +1,5 @@
 /// DDGS exceptions.
+library;
 
 /// Base exception class for ddgs.
 class DDGSException implements Exception {
